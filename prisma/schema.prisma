@@ -1,0 +1,280 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- Enums ---
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  PROFESSIONAL
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  DRAG_AND_DROP
+}
+
+enum ProgressStatus {
+  LOCKED
+  IN_PROGRESS
+  COMPLETED
+}
+
+// --- Auth & Core ---
+
+model User {
+  id            String  @id @default(uuid())
+  email         String  @unique
+  emailVerified Boolean @default(false)
+  password      String?
+  full_name     String
+  name          String? // Username
+  image         String? // Profile picture
+
+  // Status
+  isDisabled Boolean @default(false)
+
+  // Academic Group (Relación con el Roadmap del grupo)
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id])
+
+  // Gamification (Estilo Duolingo)
+  totalXp          Int      @default(0)
+  streakDays       Int      @default(0)
+  currentEnergy    Int      @default(5)
+  maxEnergy        Int      @default(5)
+  dailyGoalMinutes Int      @default(15)
+  lastEnergyRefill DateTime @default(now())
+
+  // Relations
+  profile        UserProfile?
+  progress       UserProgress[]
+  lessonAttempts LessonAttempt[]
+  rewardEvents   RewardEvent[]
+  sessions       Session[]
+  accounts       Account[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([totalXp(sort: Desc)])
+  @@index([groupId])
+  @@map("users")
+}
+
+model Group {
+  id          String  @id @default(uuid())
+  name        String // Ej: "Grupo A", "Grupo B"
+  description String?
+
+  // El Roadmap es la secuencia de lecciones para este grupo
+  roadmap RoadmapNode[]
+  users   User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("groups")
+}
+
+// --- Content Library (Independiente) ---
+
+model Course {
+  id         String  @id @default(uuid())
+  name       String // Ej: "Razonamiento Matemático", "Álgebra"
+  colorTheme String? // Para UI personalizada por curso
+  iconUrl    String?
+
+  lessons Lesson[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("courses")
+}
+
+model Lesson {
+  id       String @id @default(uuid())
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  title       String // Ej: "Distribuciones Numéricas"
+  description String? @db.Text
+
+  // Relaciones
+  questions    Question[]
+  roadmapNodes RoadmapNode[] // Una lección puede estar en varios roadmaps
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("lessons")
+}
+
+model Question {
+  id       String @id @default(uuid())
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  questionText    String       @db.Text
+  explanationText String?      @db.Text
+  difficulty      Difficulty   @default(BEGINNER)
+  type            QuestionType @default(MULTIPLE_CHOICE)
+
+  answers  Answer[]
+  attempts LessonAttempt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([lessonId])
+  @@map("questions")
+}
+
+model Answer {
+  id         String   @id @default(uuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  answerText String  @db.Text
+  isCorrect  Boolean @default(false)
+
+  selectedIn LessonAttempt[] @relation("SelectedAnswer")
+
+  @@map("answers")
+}
+
+// --- Roadmap & Execution (La "Receta" del Grupo) ---
+
+model RoadmapNode {
+  id      String @id @default(uuid())
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  // Posición en la línea de tiempo (Imagen 2)
+  orderIndex Int
+
+  // Seguimiento de usuarios en este nodo específico
+  userProgress UserProgress[]
+  attempts     LessonAttempt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([groupId, orderIndex])
+  @@index([groupId])
+  @@map("roadmap_nodes")
+}
+
+model UserProgress {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  nodeId String
+  node   RoadmapNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  status        ProgressStatus @default(LOCKED)
+  scoreObtained Int            @default(0)
+  starsEarned   Int            @default(0) // 0 a 3 estrellas estilo Duolingo
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, nodeId])
+  @@map("user_progress")
+}
+
+// --- Logs & Analytics ---
+
+model LessonAttempt {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  nodeId String?
+  node   RoadmapNode? @relation(fields: [nodeId], references: [id])
+
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+
+  selectedAnswerId String?
+  selectedAnswer   Answer? @relation("SelectedAnswer", fields: [selectedAnswerId], references: [id])
+
+  isCorrect   Boolean  @default(false)
+  timeSeconds Int?
+  answeredAt  DateTime @default(now())
+
+  aiExplanations AiExplanation[]
+
+  @@map("lesson_attempts")
+}
+
+// --- Identity & Meta (Boilerplate necesario) ---
+
+model UserProfile {
+  id               String @id @default(uuid())
+  userId           String @unique
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetUniversity String
+  targetMajor      String
+  currentLevelTag  String @default("novato")
+
+  @@map("user_profiles")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id         String @id @default(uuid())
+  userId     String
+  providerId String
+  accountId  String
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model RewardEvent {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String // "STREAK", "LESSON_COMPLETED", "DAILY_GOAL"
+  pointsDelta Int
+  createdAt   DateTime @default(now())
+
+  @@map("reward_events")
+}
+
+model AiExplanation {
+  id        String        @id @default(uuid())
+  attemptId String
+  attempt   LessonAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  content   Json
+  createdAt DateTime      @default(now())
+
+  @@map("ai_explanations")
+}

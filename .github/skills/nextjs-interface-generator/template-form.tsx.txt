@@ -1,0 +1,95 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import type { Path } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Loader2, {{#each fields}}{{icon}}, {{/each}}Save } from "lucide-react";
+
+// Componentes Reutilizables
+import { FormField } from "@/components/form-field";
+import { Button } from "@/components/ui/button";
+
+// Tipado y Lógica
+import {
+  {{modelName}}FormData,
+  {{modelNameLower}}Schema
+} from "@/features/{{domain}}/schemas/{{modelNameLower}}-schema";
+import { {{modelNameLower}}Action } from "@/features/{{domain}}/actions/{{modelNameLower}}";
+
+export function {{modelName}}Form() {
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<{{modelName}}FormData>({
+    resolver: zodResolver({{modelNameLower}}Schema),
+  });
+
+  const onSubmit = async (data: {{modelName}}FormData) => {
+    try {
+      const result = await {{modelNameLower}}Action(data);
+
+      if (!result.success) {
+        if (result.fieldErrors) {
+          Object.entries(result.fieldErrors).forEach(([key, value]) => {
+            setError(key as Path<{{modelName}}FormData>, { message: value?.[0] });
+          });
+          toast.error("Revisa los campos marcados");
+        } else {
+          toast.error(result.error || "Ocurrió un error inesperado");
+        }
+        return;
+      }
+
+      toast.success("¡{{modelName}} gestionado correctamente!");
+      {{#if redirectPath}}
+      router.push("{{redirectPath}}");
+      {{/if}}
+    } catch (error) {
+      toast.error("Error de conexión con el servidor");
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-full max-w-md mx-auto">
+      <div className="space-y-2 text-center mb-8">
+        <h2 className="text-2xl font-bold tracking-tight text-gray-800">
+          Formulario de {{modelName}}
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Completa la información requerida para la plataforma.
+        </p>
+      </div>
+
+      {{#each fields}}
+      <FormField
+        label="{{label}}"
+        placeholder="{{placeholder}}"
+        icon={ {{~icon~}} }
+        type="{{type}}"
+        register={register("{{name}}")}
+        error={errors.{{name}}?.message}
+      />
+      {{/each}}
+
+      <Button
+        disabled={isSubmitting}
+        className="w-full h-14 font-bold shadow-lg transition-all active:scale-[0.98]"
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            Procesando...
+          </>
+        ) : (
+          "Guardar información"
+        )}
+      </Button>
+    </form>
+  );
+}

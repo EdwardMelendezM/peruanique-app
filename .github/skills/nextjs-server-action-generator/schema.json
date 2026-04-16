@@ -1,0 +1,54 @@
+{
+  "name": "nextjs-server-action-generator",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "feature": {
+        "type": "string",
+        "description": "Nombre del feature, por ejemplo: roadmap o ai-insight"
+      },
+      "actionName": {
+        "type": "string",
+        "description": "Nombre del archivo/accion en kebab-case o camelCase"
+      },
+      "functionName": {
+        "type": "string",
+        "description": "Nombre de la funcion exportada, por ejemplo: getRouteDossier"
+      },
+      "schemaImport": {
+        "type": "string",
+        "description": "Ruta relativa del schema Zod dentro del feature"
+      },
+      "schemaName": {
+        "type": "string",
+        "description": "Nombre del schema Zod, por ejemplo: getRouteDossierSchema"
+      },
+      "inputTypeName": {
+        "type": "string",
+        "description": "Tipo TypeScript del input"
+      },
+      "resultTypeName": {
+        "type": "string",
+        "description": "Tipo union de salida de la accion"
+      },
+      "revalidatePath": {
+        "type": "string",
+        "description": "Ruta a revalidar en mutaciones"
+      },
+      "requiresMutation": {
+        "type": "boolean",
+        "default": false
+      }
+    },
+    "required": [
+      "feature",
+      "actionName",
+      "functionName",
+      "schemaImport",
+      "schemaName",
+      "inputTypeName",
+      "resultTypeName"
+    ]
+  }
+}
+

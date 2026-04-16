@@ -1,0 +1,22 @@
+{
+  "name": "nextjs-sodu-table-generator",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "modelName": { "type": "string", "description": "Nombre del modelo (ej: 'Coach')." },
+      "columns": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "header": { "type": "string" },
+            "key": { "type": "string" },
+            "type": { "type": "string", "enum": ["text", "image", "badge", "date"], "default": "text" }
+          }
+        }
+      },
+      "deleteAction": { "type": "boolean", "default": true }
+    },
+    "required": ["modelName", "columns"]
+  }
+}

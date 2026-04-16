@@ -1,0 +1,12 @@
+import { EmptyState } from "@/components/empty-state";
+
+export function EmptyStateExample() {
+  return (
+    <EmptyState
+      title="Aun no hay registros"
+      description="Crea el primer registro para comenzar."
+      ctaLabel="Nuevo registro"
+      ctaHref="/ruta/nuevo"
+    />
+  );
+}

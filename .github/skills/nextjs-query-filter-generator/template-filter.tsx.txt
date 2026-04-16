@@ -1,0 +1,5 @@
+import { TableSearch } from "@/components/table-search";
+
+export function TableSearchExample() {
+  return <TableSearch placeholder="Buscar..." />;
+}

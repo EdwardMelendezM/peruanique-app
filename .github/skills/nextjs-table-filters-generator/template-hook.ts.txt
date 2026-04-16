@@ -1,0 +1,22 @@
+"use client";
+
+import { useTableFilters } from "@/src/hooks/use-table-filters";
+
+type SortColumn = "title" | "author";
+
+export function ExampleTable({ totalItems }: { totalItems: number }) {
+  const { sortLink, safePage, totalPages, startIndex } = useTableFilters<SortColumn>(
+    totalItems,
+    10,
+    { sortKeys: ["title", "author"] }
+  );
+
+  return (
+    <div>
+      <a href={sortLink("title")}>Ordenar por titulo</a>
+      <div>{`Page: ${safePage} / ${totalPages}`}</div>
+      <div>{`Start index: ${startIndex}`}</div>
+    </div>
+  );
+}
+

@@ -1,0 +1,76 @@
+"use server";
+
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/get-session";
+{{#if requiresMutation}}
+import { revalidatePath } from "next/cache";
+{{/if}}
+import {
+  {{schemaName}},
+  type {{inputTypeName}},
+} from "@/features/{{feature}}/schemas/{{schemaImport}}";
+
+export type {{resultTypeName}} =
+  | {
+      success: true;
+      data: {
+        // TODO: Reemplaza con el contrato final que consume el cliente.
+      };
+    }
+  | {
+      success: false;
+      error: string;
+      fieldErrors?: Record<string, string[]>;
+    };
+
+export const {{functionName}} = async (
+  input: {{inputTypeName}}
+): Promise<{{resultTypeName}}> => {
+  const parsedInput = {{schemaName}}.safeParse(input);
+
+  if (!parsedInput.success) {
+    return {
+      success: false,
+      error: "Datos invalidos",
+      fieldErrors: parsedInput.error.flatten().fieldErrors,
+    };
+  }
+
+  const session = await getSession();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    return { success: false, error: "No autorizado" };
+  }
+
+  try {
+    // Nota: Limita include/select para evitar sobreexposicion de datos.
+    const entity = await prisma.{{feature}}.findFirst({
+      where: {
+        userId,
+      },
+    });
+
+    if (!entity) {
+      return { success: false, error: "Recurso no encontrado" };
+    }
+
+    {{#if requiresMutation}}
+    revalidatePath("{{revalidatePath}}");
+    {{/if}}
+
+    return {
+      success: true,
+      data: {
+        // TODO: Mapear el payload final y serializar fechas con toISOString() si aplica.
+      },
+    };
+  } catch (error) {
+    console.error("[{{functionName}}_ERROR]", error);
+    return {
+      success: false,
+      error: "Error de servidor",
+    };
+  }
+};
+
