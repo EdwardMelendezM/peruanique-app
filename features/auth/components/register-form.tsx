@@ -47,7 +47,7 @@ export function RegisterForm() {
     }
 
     toast.success("Cuenta creada correctamente");
-    router.push("/courses");
+    router.push("/admin/courses");
     router.refresh();
   };
 

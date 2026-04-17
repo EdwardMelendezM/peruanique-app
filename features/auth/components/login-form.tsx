@@ -45,7 +45,7 @@ export function LoginForm() {
     }
 
     toast.success("Bienvenido de nuevo");
-    router.push("/courses");
+    router.push("/admin/courses");
     router.refresh();
   };
 
