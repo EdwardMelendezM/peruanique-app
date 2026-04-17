@@ -6,7 +6,7 @@ import { LoginForm } from "../components/login-form";
 export async function LoginScreen() {
   const session = await getSession();
   if (session.success) {
-    redirect("/dashboard");
+    redirect("/courses");
   }
 
   return (

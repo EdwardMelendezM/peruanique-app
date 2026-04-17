@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import { FormField } from "@/components/forms/forms-field";
+import { FormField } from "@/components/forms/form-field";
 import { Button } from "@/components/ui/button";
 import { registerSchema, type RegisterInput } from "../schemas/auth-schemas";
 
@@ -47,7 +47,7 @@ export function RegisterForm() {
     }
 
     toast.success("Cuenta creada correctamente");
-    router.push("/dashboard");
+    router.push("/courses");
     router.refresh();
   };
 

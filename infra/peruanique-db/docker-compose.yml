@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    container_name: peruanique-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: peruanique-db
+    ports:
+      - "5655:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

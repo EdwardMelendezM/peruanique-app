@@ -4,14 +4,9 @@ import * as React from "react";
 import {
   BookOpen,
   LayoutDashboard,
-  Settings,
-  Users,
   LogOut,
-  FileQuestion,
-  CheckCircle2,
-  Code2,
-  Library,
   GitBranch,
+  Users,
 } from "lucide-react";
 
 import {
@@ -34,24 +29,9 @@ const navigation = [
     title: "Gestión de Contenido",
     items: [
       {title: "Dashboard", href: "/admin", icon: LayoutDashboard},
-      {title: "Biblioteca Global", href: "/admin/library", icon: Library},
-      {title: "Constructor Roadmap", href: "/admin/roadmap", icon: GitBranch},
-    ],
-  },
-  {
-    title: "Legacy (Antiguo)",
-    items: [
       {title: "Cursos", href: "/admin/courses", icon: BookOpen},
-      {title: "Lecciones", href: "/admin/lessons", icon: Code2},
-      {title: "Preguntas", href: "/admin/questions", icon: FileQuestion},
-      {title: "Respuestas", href: "/admin/answers", icon: CheckCircle2},
-    ],
-  },
-  {
-    title: "Sistema",
-    items: [
-      {title: "Usuarios", href: "/dashboard/users", icon: Users},
-      {title: "Configuración", href: "/dashboard/settings", icon: Settings},
+      {title: "Grupos", href: "/admin/groups", icon: Users},
+      {title: "Constructor Roadmap", href: "/admin/roadmap", icon: GitBranch},
     ],
   },
 ];
@@ -82,7 +62,9 @@ export function AppSidebar() {
             </SidebarGroupLabel>
             <SidebarMenu>
               {group.items.map((item) => {
-                const isActive = pathname === item.href;
+                const isActive = item.href === "/admin"
+                  ? pathname === "/admin"
+                  : pathname.startsWith(item.href);
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton

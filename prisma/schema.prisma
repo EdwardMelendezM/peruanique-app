@@ -75,6 +75,17 @@ model User {
   @@map("users")
 }
 
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
+}
+
 model Group {
   id          String  @id @default(uuid())
   name        String // Ej: "Grupo A", "Grupo B"
@@ -133,6 +144,7 @@ model Question {
   explanationText String?      @db.Text
   difficulty      Difficulty   @default(BEGINNER)
   type            QuestionType @default(MULTIPLE_CHOICE)
+  from            String? // Ej: "UNSAAC ORD 2023-I"
 
   answers  Answer[]
   attempts LessonAttempt[]
@@ -240,20 +252,35 @@ model UserProfile {
 
 model Session {
   id        String   @id @default(uuid())
-  userId    String
-  token     String   @unique
   expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("sessions")
 }
 
 model Account {
-  id         String @id @default(uuid())
-  userId     String
-  providerId String
-  accountId  String
-  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                    String    @id @default(uuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("accounts")
 }

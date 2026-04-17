@@ -1,0 +1,69 @@
+{{#if isList}}
+import { {{listComponentName}} } from "@/features/{{feature}}/components/{{listComponentImport}}";
+{{#each listActions}}
+import { {{importName}} } from "@/features/{{../feature}}/actions/{{importPath}}";
+{{/each}}
+
+type {{resourceName}}ListPageProps = {
+  searchParams?: Promise<Record<string, string | undefined>>;
+};
+
+export default async function {{resourceName}}ListPage({
+  searchParams,
+}: {{resourceName}}ListPageProps) {
+  const params = searchParams ? await searchParams : {};
+
+  {{#if listActions.length}}
+  const data = await Promise.all([
+    {{#each listActions}}
+    {{callExpression}},
+    {{/each}}
+  ]);
+  {{#each listActions}}
+  const {{resultKey}} = data[{{@index}}];
+  {{/each}}
+  {{/if}}
+
+  return (
+    <{{listComponentName}}
+      {{#each listActions}}
+      {{resultKey}}={{{resultKey}}}
+      {{/each}}
+      searchParams={params}
+    />
+  );
+}
+{{/if}}
+
+{{#if isEdit}}
+import { {{getByIdActionName}} } from "@/features/{{feature}}/actions/{{getByIdActionImport}}";
+import { {{editComponentName}} } from "@/features/{{feature}}/components/{{editComponentImport}}";
+
+interface {{resourceName}}EditPageProps {
+  params: Promise<{ {{idParam}}: string }>;
+}
+
+export default async function Edit{{resourceName}}Page({ params }: {{resourceName}}EditPageProps) {
+  const { {{idParam}} } = await params;
+  const data = await {{getByIdActionName}}({{idParam}});
+
+  if (!data) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center font-medium text-muted-foreground">
+        No se encontro el recurso.
+      </div>
+    );
+  }
+
+  return <{{editComponentName}} initialData={data} />;
+}
+{{/if}}
+
+{{#if isNew}}
+import {{newComponentName}} from "@/features/{{feature}}/components/{{newComponentImport}}";
+
+export default function New{{resourceName}}Page() {
+  return <{{newComponentName}} />;
+}
+{{/if}}
+

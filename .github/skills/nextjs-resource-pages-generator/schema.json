@@ -1,0 +1,98 @@
+{
+  "name": "nextjs-resource-pages-generator",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "flowType": {
+        "type": "string",
+        "enum": ["list", "edit", "new"],
+        "description": "Page mode to generate"
+      },
+      "isList": {
+        "type": "boolean",
+        "default": false,
+        "description": "Set true when generating list page template"
+      },
+      "isEdit": {
+        "type": "boolean",
+        "default": false,
+        "description": "Set true when generating edit page template"
+      },
+      "isNew": {
+        "type": "boolean",
+        "default": false,
+        "description": "Set true when generating new page template"
+      },
+      "feature": {
+        "type": "string",
+        "description": "Feature folder name inside features/"
+      },
+      "resourceName": {
+        "type": "string",
+        "description": "PascalCase resource name, ex: Route"
+      },
+      "resourceNameLower": {
+        "type": "string",
+        "description": "lowercase resource name, ex: route"
+      },
+      "idParam": {
+        "type": "string",
+        "default": "id",
+        "description": "Dynamic route param key for edit pages"
+      },
+      "listComponentName": {
+        "type": "string",
+        "description": "List screen/component exported by the feature"
+      },
+      "listComponentImport": {
+        "type": "string",
+        "description": "List component import path inside feature components"
+      },
+      "newComponentName": {
+        "type": "string",
+        "description": "Create form/screen component exported by the feature"
+      },
+      "newComponentImport": {
+        "type": "string",
+        "description": "Create component import path inside feature components"
+      },
+      "editComponentName": {
+        "type": "string",
+        "description": "Edit screen/component exported by the feature"
+      },
+      "editComponentImport": {
+        "type": "string",
+        "description": "Edit component import path inside feature components"
+      },
+      "getByIdActionName": {
+        "type": "string",
+        "description": "Server action function used in edit page"
+      },
+      "getByIdActionImport": {
+        "type": "string",
+        "description": "Action import path inside feature actions"
+      },
+      "listActions": {
+        "type": "array",
+        "description": "Optional list of extra server actions for list page",
+        "items": {
+          "type": "object",
+          "properties": {
+            "importName": { "type": "string" },
+            "importPath": { "type": "string" },
+            "callExpression": { "type": "string" },
+            "resultKey": { "type": "string" }
+          },
+          "required": ["importName", "importPath", "callExpression", "resultKey"]
+        }
+      }
+    },
+    "required": [
+      "flowType",
+      "feature",
+      "resourceName",
+      "resourceNameLower"
+    ]
+  }
+}
+

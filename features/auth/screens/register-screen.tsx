@@ -6,7 +6,7 @@ import { RegisterForm } from "../components/register-form";
 export async function RegisterScreen() {
   const session = await getSession();
   if (session.success) {
-    redirect("/dashboard");
+    redirect("/courses");
   }
 
   return (
