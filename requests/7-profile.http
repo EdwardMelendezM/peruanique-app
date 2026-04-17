@@ -1,0 +1,29 @@
+### ============================================
+### 4.7 PROFILE ENDPOINTS
+### ============================================
+
+### GET /v1/profile/stats
+### Obtener estadísticas principales del usuario
+GET {{baseUrl}}/profile/stats
+Authorization: Bearer {{token}}
+
+### ============================================
+
+### GET /v1/profile/activity
+### Obtener historial de actividad reciente
+GET {{baseUrl}}/profile/activity
+Authorization: Bearer {{token}}
+
+### ============================================
+### ERROR CASES
+### ============================================
+
+### GET /v1/profile/stats - Without auth
+GET {{baseUrl}}/profile/stats
+
+### ============================================
+
+### GET /v1/profile/activity - Without auth
+GET {{baseUrl}}/profile/activity
+
+### ============================================

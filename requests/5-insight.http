@@ -1,0 +1,49 @@
+### ============================================
+### 4.5 INSIGHT IA ENDPOINT
+### ============================================
+
+### POST /v1/insight/generate
+### Generar explicación IA para respuesta incorrecta
+POST {{baseUrl}}/insight/generate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "attemptId": "{{attemptId}}"
+}
+
+### ============================================
+### ERROR CASES
+### ============================================
+
+### POST /v1/insight/generate - Attempt not found
+POST {{baseUrl}}/insight/generate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "attemptId": "00000000-0000-0000-0000-000000000000"
+}
+
+### ============================================
+
+### POST /v1/insight/generate - Invalid UUID
+POST {{baseUrl}}/insight/generate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "attemptId": "not-a-uuid"
+}
+
+### ============================================
+
+### POST /v1/insight/generate - Without auth
+POST {{baseUrl}}/insight/generate
+Content-Type: application/json
+
+{
+  "attemptId": "{{attemptId}}"
+}
+
+### ============================================

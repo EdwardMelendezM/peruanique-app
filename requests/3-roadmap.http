@@ -1,0 +1,37 @@
+### ============================================
+### 4.3 ROADMAP & HOME ENDPOINTS
+### ============================================
+
+### GET /v1/roadmap?groupId=...
+### Obtener roadmap del grupo con progreso
+GET {{baseUrl}}/roadmap?groupId={{groupId}}
+Authorization: Bearer {{token}}
+
+### ============================================
+
+### GET /v1/home
+### Dashboard principal con roadmap y métricas
+GET {{baseUrl}}/home
+Authorization: Bearer {{token}}
+
+### ============================================
+### ERROR CASES
+### ============================================
+
+### GET /v1/roadmap - Missing groupId
+GET {{baseUrl}}/roadmap
+Authorization: Bearer {{token}}
+
+### ============================================
+
+### GET /v1/roadmap - Invalid groupId
+GET {{baseUrl}}/roadmap?groupId=invalid-uuid
+Authorization: Bearer {{token}}
+
+### ============================================
+
+### GET /v1/home - User not completed onboarding
+GET {{baseUrl}}/home
+Authorization: Bearer {{token}}
+
+### ============================================

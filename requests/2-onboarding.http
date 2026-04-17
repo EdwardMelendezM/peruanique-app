@@ -1,0 +1,51 @@
+### ============================================
+### 4.2 ONBOARDING ENDPOINTS
+### ============================================
+
+### GET /v1/onboarding/groups
+### Listar grupos disponibles (sin auth)
+GET {{baseUrl}}/onboarding/groups
+
+### ============================================
+
+### POST /v1/onboarding/complete
+### Finalizar onboarding y guardar grupo
+POST {{baseUrl}}/onboarding/complete
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "groupId": "{{groupId}}",
+  "username": "alex_perez",
+  "birthDate": "2005-06-15"
+}
+
+### ============================================
+### ERROR CASES
+### ============================================
+
+### POST /v1/onboarding/complete - Invalid date format
+POST {{baseUrl}}/onboarding/complete
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "groupId": "{{groupId}}",
+  "username": "testuser",
+  "birthDate": "15/06/2005"
+}
+
+### ============================================
+
+### POST /v1/onboarding/complete - Non-existent group
+POST {{baseUrl}}/onboarding/complete
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "groupId": "00000000-0000-0000-0000-000000000000",
+  "username": "testuser",
+  "birthDate": "2005-06-15"
+}
+
+### ============================================

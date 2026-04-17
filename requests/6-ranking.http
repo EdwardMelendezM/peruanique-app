@@ -1,0 +1,50 @@
+### ============================================
+### 4.6 RANKING ENDPOINT
+### ============================================
+
+### GET /v1/ranking - All time
+### Obtener ranking global (todos los usuarios)
+GET {{baseUrl}}/ranking?period=all
+Authorization: Bearer {{token}}
+
+### ============================================
+
+### GET /v1/ranking - Daily
+### Obtener ranking diario
+GET {{baseUrl}}/ranking?period=daily
+Authorization: Bearer {{token}}
+
+### ============================================
+
+### GET /v1/ranking - Weekly
+### Obtener ranking semanal
+GET {{baseUrl}}/ranking?period=weekly
+Authorization: Bearer {{token}}
+
+### ============================================
+
+### GET /v1/ranking - By group
+### Obtener ranking por grupo específico
+GET {{baseUrl}}/ranking?groupId={{groupId}}&period=daily
+Authorization: Bearer {{token}}
+
+### ============================================
+### ERROR CASES
+### ============================================
+
+### GET /v1/ranking - Invalid period
+GET {{baseUrl}}/ranking?period=invalid
+Authorization: Bearer {{token}}
+
+### ============================================
+
+### GET /v1/ranking - Non-existent group
+GET {{baseUrl}}/ranking?groupId=00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+
+### ============================================
+
+### GET /v1/ranking - Without auth
+GET {{baseUrl}}/ranking?period=all
+
+### ============================================

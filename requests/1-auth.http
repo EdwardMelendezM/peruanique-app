@@ -1,0 +1,97 @@
+### ============================================
+### 4.1 AUTH & SESSION ENDPOINTS
+### ============================================
+
+### POST /v1/auth/register
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "username": "{{username}}",
+  "fullName": "{{fullName}}"
+}
+
+> {%
+    client.global.set("token", response.body.data.session.token);
+%}
+
+### ============================================
+
+### POST /v1/auth/login
+### Login con credenciales válidas
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+Origin: {{host}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+> {%
+    // Verificamos que la respuesta sea exitosa (200 o 201)
+    client.test("Login exitoso", function() {
+        client.assert(response.status === 200 || response.status === 201, "El login falló");
+    });
+
+    // Guardamos el token en una variable global
+    // Ajusta 'response.body.data.session.token' según la estructura exacta de tu JSON
+    client.global.set("token", response.body.data.session.token);
+
+    client.log("Token guardado correctamente");
+%}
+
+### ============================================
+
+### GET /v1/me
+### Obtener perfil actual del usuario autenticado
+GET {{baseUrl}}/me
+Authorization: Bearer {{token}}
+Origin: {{host}}
+
+### ============================================
+
+### PATCH /v1/me
+### Actualizar perfil del usuario
+PATCH {{baseUrl}}/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Origin: {{host}}
+
+{
+  "username": "newusername",
+  "fullName": "New Full Name",
+  "birthDate": "2000-01-15"
+}
+
+### ============================================
+
+### POST /v1/auth/logout
+### Cerrar sesión
+POST {{baseUrl}}/auth/logout
+Origin: {{host}}
+Authorization: Bearer {{token}}
+
+### ============================================
+### ERROR CASES
+### ============================================
+
+### POST /v1/auth/login - Invalid credentials
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+Origin: {{host}}
+
+{
+  "email": "wrong@example.com",
+  "password": "wrongpassword"
+}
+
+### ============================================
+
+### GET /v1/me - Without auth
+GET {{baseUrl}}/me
+Origin: {{host}}
+
+### ============================================

@@ -1,0 +1,100 @@
+### ============================================
+### FLUJO COMPLETO DE TESTING INTEGRADO
+### Simula un usuario completando el ciclo completo
+### ============================================
+
+### STEP 1: Register a new user
+### ============================================
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "complete-flow-{{$timestamp}}@example.com",
+  "password": "ComplexPass123!",
+  "username": "user_{{$timestamp}}",
+  "fullName": "Test User Complete Flow"
+}
+
+@registerToken = {{response.body.data.session.token}}
+@userId = {{response.body.data.user.id}}
+
+### ============================================
+### STEP 2: Get available groups
+### ============================================
+GET {{baseUrl}}/onboarding/groups
+
+@firstGroupId = {{response.body.data[0].id}}
+
+### ============================================
+### STEP 3: Complete onboarding
+### ============================================
+POST {{baseUrl}}/onboarding/complete
+Authorization: Bearer {{registerToken}}
+Content-Type: application/json
+
+{
+  "groupId": "{{firstGroupId}}",
+  "username": "user_flow_{{$timestamp}}",
+  "birthDate": "2005-06-15"
+}
+
+### ============================================
+### STEP 4: Get home dashboard
+### ============================================
+GET {{baseUrl}}/home
+Authorization: Bearer {{registerToken}}
+
+### ============================================
+### STEP 5: Get roadmap
+### ============================================
+GET {{baseUrl}}/roadmap?groupId={{firstGroupId}}
+Authorization: Bearer {{registerToken}}
+
+### ============================================
+### STEP 6: Get next question
+### ============================================
+# Nota: Reemplaza {{lessonId}} con un ID real
+GET {{baseUrl}}/lessons/{{lessonId}}/question
+Authorization: Bearer {{registerToken}}
+
+### ============================================
+### STEP 7: Answer a question
+### ============================================
+# Nota: Reemplaza {{questionId}} y {{answerId}} con IDs reales
+POST {{baseUrl}}/lessons/{{lessonId}}/answer
+Authorization: Bearer {{registerToken}}
+Content-Type: application/json
+
+{
+  "questionId": "{{questionId}}",
+  "selectedOptionId": "{{answerId}}",
+  "timeSpentSeconds": 30
+}
+
+@currentAttemptId = {{response.body.data.attemptId}}
+
+### ============================================
+### STEP 8: Check profile stats
+### ============================================
+GET {{baseUrl}}/profile/stats
+Authorization: Bearer {{registerToken}}
+
+### ============================================
+### STEP 9: Check profile activity
+### ============================================
+GET {{baseUrl}}/profile/activity
+Authorization: Bearer {{registerToken}}
+
+### ============================================
+### STEP 10: Get ranking
+### ============================================
+GET {{baseUrl}}/ranking?period=all
+Authorization: Bearer {{registerToken}}
+
+### ============================================
+### STEP 11: Check lesson progress
+### ============================================
+GET {{baseUrl}}/lessons/{{lessonId}}/progress
+Authorization: Bearer {{registerToken}}
+
+### ============================================

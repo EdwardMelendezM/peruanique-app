@@ -1,0 +1,74 @@
+### ============================================
+### 4.4 LESSONS ENDPOINTS
+### ============================================
+
+### GET /v1/lessons/:lessonId
+### Obtener información de una lección
+GET {{baseUrl}}/lessons/{{lessonId}}
+Authorization: Bearer {{token}}
+
+### ============================================
+
+### GET /v1/lessons/:lessonId/question
+### Obtener siguiente pregunta disponible
+GET {{baseUrl}}/lessons/{{lessonId}}/question
+Authorization: Bearer {{token}}
+
+### ============================================
+
+### POST /v1/lessons/:lessonId/answer
+### Registrar respuesta del usuario
+POST {{baseUrl}}/lessons/{{lessonId}}/answer
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "questionId": "{{questionId}}",
+  "selectedOptionId": "{{answerId}}",
+  "timeSpentSeconds": 25
+}
+
+@attemptId = {{response.body.data.attemptId}}
+
+### ============================================
+
+### GET /v1/lessons/:lessonId/progress
+### Obtener progreso del usuario en lección
+GET {{baseUrl}}/lessons/{{lessonId}}/progress
+Authorization: Bearer {{token}}
+
+### ============================================
+### ERROR CASES
+### ============================================
+
+### POST /v1/lessons/:lessonId/answer - Time out of range
+POST {{baseUrl}}/lessons/{{lessonId}}/answer
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "questionId": "{{questionId}}",
+  "selectedOptionId": "{{answerId}}",
+  "timeSpentSeconds": 5000
+}
+
+### ============================================
+
+### POST /v1/lessons/:lessonId/answer - Invalid UUID
+POST {{baseUrl}}/lessons/{{lessonId}}/answer
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "questionId": "not-a-uuid",
+  "selectedOptionId": "{{answerId}}",
+  "timeSpentSeconds": 25
+}
+
+### ============================================
+
+### GET /v1/lessons/:lessonId - Lesson not found
+GET {{baseUrl}}/lessons/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+
+### ============================================
