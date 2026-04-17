@@ -1,16 +1,10 @@
 import {NextRequest, NextResponse} from "next/server";
 import {getSessionCookie} from "better-auth/cookies";
-import {auth} from "@/lib/auth";
-import {prisma} from "@/lib/prisma";
 
 export async function proxy(request: NextRequest) {
   const {pathname} = request.nextUrl;
 
-  if (
-    pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/onboarding") ||
-    pathname.startsWith("/_next")
-  ) {
+  if (pathname.includes("/auth/") || pathname.startsWith("/_next")) {
     return NextResponse.next();
   }
 
