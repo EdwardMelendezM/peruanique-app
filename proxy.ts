@@ -1,28 +1,30 @@
 import {NextRequest, NextResponse} from "next/server";
 import {getSessionCookie} from "better-auth/cookies";
 
+// proxy.ts (Middleware)
 export async function proxy(request: NextRequest) {
-  const {pathname} = request.nextUrl;
+  const { pathname } = request.nextUrl;
 
-  if (pathname.includes("/auth/") || pathname.startsWith("/_next")) {
+  // Permitir siempre estas rutas sin chequear sesión
+  const isPublicRoute =
+    pathname.includes("/auth/login") ||
+    pathname.includes("/auth/register") ||
+    pathname.startsWith("/_next");
+
+  if (isPublicRoute) {
     return NextResponse.next();
   }
 
-  // 1. Si NO hay sesión y el usuario intenta entrar a una ruta protegida
   const sessionCookie = getSessionCookie(request);
+
+  // Si es una petición de API y no hay sesión, devuelve 401, no redirección (UX de App Móvil)
+  if (!sessionCookie && pathname.startsWith("/api")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   if (!sessionCookie) {
-    // Redirigir al login en lugar de 404 para mejorar la UX
-    const loginUrl = new URL("/login", request.url);
-    // Opcional: guardar la URL de origen para volver después del login
-    loginUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   return NextResponse.next();
 }
-
-export const config = {
-  matcher: [
-    "/admin",
-  ],
-};
