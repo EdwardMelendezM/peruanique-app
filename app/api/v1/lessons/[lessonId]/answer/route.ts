@@ -29,7 +29,7 @@ const answerLessonSchema = z.object({
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { lessonId: string } }
+  { params }: { params: Promise<{ lessonId: string }> }
 ) {
   // Verify user is authenticated
   const session = await auth.api.getSession({ headers: request.headers });
@@ -39,7 +39,7 @@ export async function POST(
   }
 
   try {
-    const { lessonId } = params;
+    const { lessonId } = await params;
 
     // Get and validate request body
     const rawBody = await getRequestJson<unknown>(request);

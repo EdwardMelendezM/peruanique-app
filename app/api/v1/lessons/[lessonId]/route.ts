@@ -11,7 +11,7 @@ import { jsonError, jsonSuccess } from "../../_lib/mobile-auth";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { lessonId: string } }
+  { params }: { params: Promise<{ lessonId: string }> }
 ) {
   // Verify user is authenticated
   const session = await auth.api.getSession({ headers: request.headers });
@@ -21,7 +21,7 @@ export async function GET(
   }
 
   try {
-    const { lessonId } = params;
+    const { lessonId } = await params;
 
     // Get authenticated user
     const user = await prisma.user.findUnique({
