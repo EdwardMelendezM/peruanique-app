@@ -252,12 +252,13 @@ model LessonAttempt {
 // --- Identity & Meta (Boilerplate necesario) ---
 
 model UserProfile {
-  id               String @id @default(uuid())
-  userId           String @unique
-  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  targetUniversity String
-  targetMajor      String
-  currentLevelTag  String @default("novato")
+  id               String  @id @default(uuid())
+  userId           String  @unique
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetUniversity String?
+  targetMajor      String?
+  currentLevelTag  String  @default("novato")
+  birthDate        String? // ISO-8601 date (YYYY-MM-DD)
 
   @@map("user_profiles")
 }

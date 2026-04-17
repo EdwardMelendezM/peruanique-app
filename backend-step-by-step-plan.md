@@ -174,9 +174,8 @@ Cada endpoint debe documentarse con esta estructura:
 - `success`
 - `data[]`
   - `id`
-  - `code`
   - `name`
-  - `careerFocus`
+  - `description?`
 
 #### `POST /v1/onboarding/complete`
 **Propósito:** finalizar onboarding y guardar grupo/perfil inicial.
@@ -204,22 +203,20 @@ Cada endpoint debe documentarse con esta estructura:
 - `success`
 - `data.group`
   - `id`
-  - `code`
   - `name`
-  - `careerFocus`
+  - `description?`
 - `data.summary`
-  - `points`
-  - `coins`
+  - `points` (totalXp del usuario)
+  - `coins` (fromRewardEvents)
   - `streakDays`
-  - `completedLessons`
+  - `completedLessons` (COUNT de UserProgress con status COMPLETED)
 - `data.nodes[]`
-  - `id`
+  - `id` (RoadmapNode.id)
   - `lessonId`
   - `lessonTitle`
-  - `status` (`locked | current | completed`)
+  - `status` (`LOCKED | IN_PROGRESS | COMPLETED`)
   - `orderIndex`
-  - `isCheckpoint`
-  - `progressPercent`
+  - `progressPercent` (scoreObtained / max_score)
 
 #### `GET /v1/home`
 **Propósito:** endpoint de conveniencia para la pantalla principal.
@@ -244,10 +241,11 @@ Cada endpoint debe documentarse con esta estructura:
 - `success`
 - `data.id`
 - `data.title`
-- `data.description`
-- `data.course`
+- `data.description?`
+- `data.courseId`
+- `data.courseName`
 - `data.questionsCount`
-- `data.completed`
+- `data.userProgress` (status, scoreObtained, starsEarned)
 
 #### `GET /v1/lessons/:lessonId/question`
 **Propósito:** entregar la siguiente pregunta disponible para esa lección.
@@ -257,13 +255,12 @@ Cada endpoint debe documentarse con esta estructura:
 **Response**
 - `success`
 - `data.questionId`
-- `data.prompt`
-- `data.difficulty`
+- `data.prompt` (questionText)
+- `data.difficulty` (BEGINNER | INTERMEDIATE | ADVANCED | PROFESSIONAL)
 - `data.options[]`
-  - `optionId`
-  - `label`
-  - `text`
-- `data.timeLimitSeconds?`
+  - `optionId` (Answer.id)
+  - `text` (answerText)
+- `data.from?` (source, e.g., "UNSAAC ORD 2023-I")
 
 #### `POST /v1/lessons/:lessonId/answer`
 **Propósito:** registrar la respuesta del usuario.
@@ -272,18 +269,17 @@ Cada endpoint debe documentarse con esta estructura:
 
 **Request**
 - `questionId`
-- `selectedOptionId`
+- `selectedOptionId` (Answer.id)
 - `timeSpentSeconds`
 
 **Response**
 - `success`
-- `data.attemptId`
+- `data.attemptId` (LessonAttempt.id)
 - `data.isCorrect`
-- `data.correctOptionId`
-- `data.xpDelta`
-- `data.coinsDelta`
-- `data.showInsight`
-- `data.nextUnlockStatus`
+- `data.correctOptionId` (correct Answer.id)
+- `data.xpDelta` (reward calculation based on isCorrect & difficulty)
+- `data.showInsight` (boolean to show explanation)
+- `data.explanation?` (explanationText from Question if isCorrect=false)
 
 #### `GET /v1/lessons/:lessonId/progress`
 **Propósito:** devolver el progreso del usuario para la lección.
@@ -292,10 +288,11 @@ Cada endpoint debe documentarse con esta estructura:
 
 **Response**
 - `success`
-- `data.status`
-- `data.score`
-- `data.completedQuestions`
-- `data.totalQuestions`
+- `data.status` (LOCKED | IN_PROGRESS | COMPLETED)
+- `data.score` (scoreObtained)
+- `data.starsEarned` (0-3)
+- `data.completedQuestions` (COUNT of correct LessonAttempt)
+- `data.totalQuestions` (COUNT of Question where lessonId=:lessonId)
 
 ### 4.5 Insight IA
 
@@ -305,20 +302,29 @@ Cada endpoint debe documentarse con esta estructura:
 **Auth requerida:** sí
 
 **Request**
-- `attemptId`
+- `attemptId` (LessonAttempt.id)
 
 **Response**
 - `success`
-- `data.provider`
-- `data.model`
+- `data.provider` (e.g., "openai", "anthropic")
+- `data.model` (e.g., "gpt-4", "claude-3")
 - `data.content[]`
-  - `title`
-  - `body`
-  - `formulaLatex?`
-  - `highlight?`
+  - `title` (section title)
+  - `body` (explanation text)
+  - `formulaLatex?` (LaTeX formula if applicable)
+  - `highlight?` (highlighted concept)
 
 **Fallback obligatorio**
-Si la IA falla, devolver la explicación base de la pregunta.
+Si la IA falla, devolver `data.fallback: true` y `data.explanation` (explanationText de Question):
+```json
+{
+  "success": true,
+  "data": {
+    "fallback": true,
+    "explanation": "Text from Question.explanationText"
+  }
+}
+```
 
 ### 4.6 Ranking
 
@@ -327,16 +333,20 @@ Si la IA falla, devolver la explicación base de la pregunta.
 
 **Auth requerida:** sí
 
+**Query Parameters**
+- `groupId?` (UUID of group, optional for global ranking)
+- `period?` (daily | weekly | all, default: daily)
+
 **Response**
 - `success`
-- `data.period`
-- `data.groupId?`
+- `data.period` (daily | weekly | all)
+- `data.groupId?` (if filtered by group)
 - `data.items[]`
-  - `position`
+  - `position` (1-based rank)
   - `userId`
-  - `username`
-  - `points`
-  - `streakDays`
+  - `username` (User.name)
+  - `points` (User.totalXp)
+  - `streakDays` (User.streakDays)
 
 ### 4.7 Perfil
 
@@ -347,11 +357,11 @@ Si la IA falla, devolver la explicación base de la pregunta.
 
 **Response**
 - `success`
-- `data.completedLessons`
-- `data.points`
-- `data.coins`
-- `data.streakDays`
-- `data.level`
+- `data.completedLessons` (COUNT of UserProgress where status=COMPLETED)
+- `data.points` (User.totalXp)
+- `data.coins` (SUM of RewardEvent.pointsDelta for this user)
+- `data.streakDays` (User.streakDays)
+- `data.level` (calculated from totalXp, e.g., floor(totalXp / 1000) + 1)
 
 #### `GET /v1/profile/activity`
 **Propósito:** obtener la actividad reciente del usuario.
@@ -361,10 +371,10 @@ Si la IA falla, devolver la explicación base de la pregunta.
 **Response**
 - `success`
 - `data.items[]`
-  - `type`
-  - `title`
-  - `subtitle`
-  - `createdAt`
+  - `type` (lesson_completed | streak_reached | level_up | daily_goal)
+  - `title` (e.g., "Completaste: Distribuciones Numéricas")
+  - `subtitle?` (e.g., "3 estrellas ganadas")
+  - `createdAt` (ISO-8601)
 
 ## Paso 5: Endpoints opcionales
 
