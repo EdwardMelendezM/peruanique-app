@@ -101,6 +101,7 @@ model Verification {
 model Group {
   id          String  @id @default(uuid())
   name        String // Ej: "Grupo A", "Grupo B"
+  code        String?
   description String?
 
   // El Roadmap es la secuencia de lecciones para este grupo
