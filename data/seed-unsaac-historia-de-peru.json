@@ -1,0 +1,199 @@
+{
+  "course": {
+    "id": "66666666-6666-6666-6666-666666666666",
+    "name": "Historia del Perú",
+    "colorTheme": "#dc2626",
+    "iconUrl": "/icons/peru-history.svg"
+  },
+  "lessons": [
+    {
+      "id": "77777777-7777-7777-7777-777777777771",
+      "title": "Culturas Preincas y Tahuantinsuyo",
+      "description": "Desde la cultura matriz Chavín hasta la organización social del Ayllu.",
+      "questions": [
+        {
+          "id": "hp-q-006",
+          "questionText": "¿A qué cultura preincaica Julio C. Tello denominó como 'cultura matriz del Perú'?",
+          "explanationText": "Tello planteó que Chavín fue la cultura matriz debido a su difusión de patrones culturales y su origen amazónico (Arawaks).",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión UNSAAC",
+          "answers": [
+            { "id": "hp-a-006-1", "answerText": "Mochica", "isCorrect": false },
+            { "id": "hp-a-006-2", "answerText": "Chavín", "isCorrect": true },
+            { "id": "hp-a-006-3", "answerText": "Wari", "isCorrect": false },
+            { "id": "hp-a-006-4", "answerText": "Paracas", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "hp-q-010",
+          "questionText": "Para proveerse de agua en la árida región de Ica, la cultura Nasca construyó:",
+          "explanationText": "Las galerías filtrantes permitieron extraer agua del subsuelo (napa freática) para la agricultura en el desierto.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Historia Perú",
+          "answers": [
+            { "id": "hp-a-010-1", "answerText": "Camellones", "isCorrect": false },
+            { "id": "hp-a-010-2", "answerText": "Galerías filtrantes", "isCorrect": true },
+            { "id": "hp-a-010-3", "answerText": "Cochas", "isCorrect": false },
+            { "id": "hp-a-010-4", "answerText": "Andenes", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "hp-q-011",
+          "questionText": "El sistema de trabajo incaico destinado a la construcción de obras públicas en beneficio del Estado se denominaba:",
+          "explanationText": "La Mita era el trabajo obligatorio y por turnos realizado por los hatunrunas para el Estado Inca.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión UNSAAC",
+          "answers": [
+            { "id": "hp-a-011-1", "answerText": "Ayni", "isCorrect": false },
+            { "id": "hp-a-011-2", "answerText": "Mita", "isCorrect": true },
+            { "id": "hp-a-011-3", "answerText": "Minca", "isCorrect": false },
+            { "id": "hp-a-011-4", "answerText": "Chunca", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "hp-q-012",
+          "questionText": "Fue el inca que logró la máxima expansión territorial del Tahuantinsuyo llegando hasta el río Ancasmayo:",
+          "explanationText": "Huayna Cápac consolidó las conquistas de sus predecesores y extendió el imperio hasta el actual territorio colombiano.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen Ordinario",
+          "answers": [
+            { "id": "hp-a-012-1", "answerText": "Pachacútec", "isCorrect": false },
+            { "id": "hp-a-012-2", "answerText": "Huayna Cápac", "isCorrect": true },
+            { "id": "hp-a-012-3", "answerText": "Túpac Yupanqui", "isCorrect": false },
+            { "id": "hp-a-012-4", "answerText": "Atahualpa", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "77777777-7777-7777-7777-777777777772",
+      "title": "Virreinato y Resistencia Andina",
+      "description": "La resistencia de Vilcabamba, instituciones coloniales y rebeliones indígenas.",
+      "questions": [
+        {
+          "id": "hp-q-001",
+          "questionText": "¿Quién fue el último Inca de Vilcabamba, ejecutado por orden del virrey Toledo?",
+          "explanationText": "Túpac Amaru I fue el último líder de la resistencia de Vilcabamba, capturado y ejecutado en 1572 tras la toma de su bastión.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Cusco Colonial",
+          "answers": [
+            { "id": "hp-a-001-1", "answerText": "Sayri Túpac", "isCorrect": false },
+            { "id": "hp-a-001-2", "answerText": "Túpac Amaru I", "isCorrect": true },
+            { "id": "hp-a-001-3", "answerText": "Manco Inca", "isCorrect": false },
+            { "id": "hp-a-001-4", "answerText": "Titu Cusi Yupanqui", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "hp-q-009",
+          "questionText": "El Tribunal del Santo Oficio de la Inquisición en el Virreinato tenía como fin principal:",
+          "explanationText": "Su objetivo era vigilar la fe y las costumbres de los españoles y combatir la herejía; los indígenas estaban exentos de su jurisdicción por ser 'neófitos'.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Simulacro UNSAAC",
+          "answers": [
+            { "id": "hp-a-009-1", "answerText": "Extirpar idolatrías indígenas", "isCorrect": false },
+            { "id": "hp-a-009-2", "answerText": "Vigilar la fe y costumbres de colonizadores", "isCorrect": true },
+            { "id": "hp-a-009-3", "answerText": "Bautizar a los nativos", "isCorrect": false },
+            { "id": "hp-a-009-4", "answerText": "Administrar las encomiendas", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "hp-q-013",
+          "questionText": "La principal causa económica que impulsó la rebelión de Túpac Amaru II en 1780 fue:",
+          "explanationText": "El abuso en el cobro de los repartos mercantiles y el aumento de las alcabalas por las Reformas Borbónicas detonaron el conflicto.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco UNSAAC",
+          "answers": [
+            { "id": "hp-a-013-1", "answerText": "La expulsión de los Jesuitas", "isCorrect": false },
+            { "id": "hp-a-013-2", "answerText": "El abuso de los repartos mercantiles", "isCorrect": true },
+            { "id": "hp-a-013-3", "answerText": "La creación de las Intendencias", "isCorrect": false },
+            { "id": "hp-a-013-4", "answerText": "La firma del Tratado de Utrecht", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "hp-q-014",
+          "questionText": "Fue la institución colonial encargada del gobierno de las ciudades, integrada por alcaldes y regidores:",
+          "explanationText": "El Cabildo era la institución que representaba a los vecinos y administraba el orden y servicios de las ciudades.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen de Admisión",
+          "answers": [
+            { "id": "hp-a-014-1", "answerText": "Real Audiencia", "isCorrect": false },
+            { "id": "hp-a-014-2", "answerText": "Cabildo", "isCorrect": true },
+            { "id": "hp-a-014-3", "answerText": "Corregimiento", "isCorrect": false },
+            { "id": "hp-a-014-4", "answerText": "Intendencia", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "77777777-7777-7777-7777-777777777773",
+      "title": "Era Republicana",
+      "description": "Corrientes libertadoras, el Oncenio de Leguía y defensa nacional.",
+      "questions": [
+        {
+          "id": "hp-q-008",
+          "questionText": "El primer golpe de Estado militar en el Perú, conocido como el Motín de Balconcillo, impuso a:",
+          "explanationText": "Los militares obligaron al Congreso a nombrar a José de la Riva Agüero como el primer presidente del Perú ante la crisis de la guerra de independencia.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Historia Republicana",
+          "answers": [
+            { "id": "hp-a-008-1", "answerText": "José de la Mar", "isCorrect": false },
+            { "id": "hp-a-008-2", "answerText": "José de la Riva Agüero", "isCorrect": true },
+            { "id": "hp-a-008-3", "answerText": "Simón Bolívar", "isCorrect": false },
+            { "id": "hp-a-008-4", "answerText": "Ramón Castilla", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "hp-q-015",
+          "questionText": "Durante el primer gobierno de Ramón Castilla, el principal recurso económico que generó ingresos al Estado fue:",
+          "explanationText": "El guano de las islas permitió el inicio de la 'Prosperidad Falaz' y la cancelación de la deuda externa e interna.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión 2026",
+          "answers": [
+            { "id": "hp-a-015-1", "answerText": "El Salitre", "isCorrect": false },
+            { "id": "hp-a-015-2", "answerText": "El Guano", "isCorrect": true },
+            { "id": "hp-a-015-3", "answerText": "El Caucho", "isCorrect": false },
+            { "id": "hp-a-015-4", "answerText": "La Plata", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "hp-q-016",
+          "questionText": "El tratado que puso fin a la Guerra con Chile en 1883, cediendo permanentemente la provincia de Tarapacá, fue el:",
+          "explanationText": "El Tratado de Ancón fue firmado el 20 de octubre de 1883, estableciendo la paz y la pérdida de territorio peruano.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Historia",
+          "answers": [
+            { "id": "hp-a-016-1", "answerText": "Tratado Salomón-Lozano", "isCorrect": false },
+            { "id": "hp-a-016-2", "answerText": "Tratado de Ancón", "isCorrect": true },
+            { "id": "hp-a-016-3", "answerText": "Tratado de Lima", "isCorrect": false },
+            { "id": "hp-a-016-4", "answerText": "Tratado Polo-Bustamante", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "hp-q-017",
+          "questionText": "El periodo de la historia peruana (1919-1930) caracterizado por la modernización del Estado y la entrega de recursos al capital extranjero se conoce como:",
+          "explanationText": "El Oncenio de Augusto B. Leguía se caracterizó por un gobierno autoritario que buscaba la 'Patria Nueva'.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Siglo XX",
+          "answers": [
+            { "id": "hp-a-017-1", "answerText": "La República Aristocrática", "isCorrect": false },
+            { "id": "hp-a-017-2", "answerText": "El Oncenio de Leguía", "isCorrect": true },
+            { "id": "hp-a-017-3", "answerText": "El Ochenio de Odría", "isCorrect": false },
+            { "id": "hp-a-017-4", "answerText": "El Docenio Militar", "isCorrect": false }
+          ]
+        }
+      ]
+    }
+  ]
+}

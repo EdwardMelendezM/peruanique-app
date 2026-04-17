@@ -9,7 +9,10 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "seed:groups": "bun run prisma/group-seed.ts",
+    "seed:main": "bun run prisma/main-seed.ts",
+    "seed": "bun run prisma/group-seed.ts && bun run prisma/main-seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

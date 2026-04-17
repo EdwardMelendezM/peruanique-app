@@ -1,0 +1,199 @@
+{
+  "course": {
+    "id": "55555555-5555-5555-5555-555555555555",
+    "name": "Competencia Comunicativa",
+    "colorTheme": "#0369a1",
+    "iconUrl": "/icons/communication.svg"
+  },
+  "lessons": [
+    {
+      "id": "cc-9999-001",
+      "title": "Gramática y Categorías Gramaticales",
+      "description": "Estudio de conjunciones, adverbios, pronombres y conjugación verbal.",
+      "questions": [
+        {
+          "id": "cc-q-001",
+          "questionText": "En la oración: “Ya no la quiero, es cierto, pero cuánto la quise”; se observa una conjunción de tipo:",
+          "explanationText": "La conjunción 'pero' es adversativa porque contrapone dos ideas. Otros ejemplos son: mas, sin embargo, no obstante.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión UNSAAC",
+          "answers": [
+            { "id": "cca-001-1", "answerText": "Copulativa", "isCorrect": false },
+            { "id": "cca-001-2", "answerText": "Disyuntiva", "isCorrect": false },
+            { "id": "cca-001-3", "answerText": "Adversativa", "isCorrect": true },
+            { "id": "cca-001-4", "answerText": "Ilativa", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "cc-q-008",
+          "questionText": "¿Qué oración presenta mayor cantidad de adverbios?",
+          "explanationText": "En la opción D, los adverbios son: 'muy' (cantidad), 'cerca' (lugar) y 'aquí' (lugar).",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen Ordinario",
+          "answers": [
+            { "id": "cca-008-1", "answerText": "Hoy seremos los mejores", "isCorrect": false },
+            { "id": "cca-008-2", "answerText": "Siempre te visitaré temprano", "isCorrect": false },
+            { "id": "cca-008-3", "answerText": "Ella vive muy cerca de aquí", "isCorrect": true },
+            { "id": "cca-008-4", "answerText": "Ellos trabajan siempre", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "cc-q-011",
+          "questionText": "El sujeto de la oración se caracteriza por poder ser reemplazado por un:",
+          "explanationText": "El pronombre es la categoría gramatical cuya función principal es sustituir al nombre o sustantivo dentro del sujeto.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Comunicación",
+          "answers": [
+            { "id": "cca-011-1", "answerText": "Adjetivo", "isCorrect": false },
+            { "id": "cca-011-2", "answerText": "Verbo", "isCorrect": false },
+            { "id": "cca-011-3", "answerText": "Pronombre", "isCorrect": true },
+            { "id": "cca-011-4", "answerText": "Adverbio", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "cc-q-014",
+          "questionText": "¿En qué alternativa el verbo presenta un error de conjugación?",
+          "explanationText": "El verbo 'producir' sigue el modelo de 'conducir'. Lo correcto es 'produjéramos' o 'produjésemos', no 'produciéramos'.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión 2026",
+          "answers": [
+            { "id": "cca-014-1", "answerText": "Concibió con facilidad la respuesta", "isCorrect": false },
+            { "id": "cca-014-2", "answerText": "El toro embistió al torero", "isCorrect": false },
+            { "id": "cca-014-3", "answerText": "Si produciéramos en serie...", "isCorrect": true },
+            { "id": "cca-014-4", "answerText": "Hiciste lo indicado en el manual", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cc-9999-002",
+      "title": "Teoría de la Comunicación y Tipología Textual",
+      "description": "Procesos comunicativos, quipus y clasificación de textos.",
+      "questions": [
+        {
+          "id": "cc-q-002",
+          "questionText": "El quipu incaico, como sistema de contabilidad y relatos, constituye un tipo de comunicación:",
+          "explanationText": "Es comunicación no verbal porque no usa palabras (código lingüístico) y es visual porque se percibe mediante la vista.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión UNSAAC",
+          "answers": [
+            { "id": "cca-002-1", "answerText": "Verbal oral", "isCorrect": false },
+            { "id": "cca-002-2", "answerText": "No verbal visual", "isCorrect": true },
+            { "id": "cca-002-3", "answerText": "No humana visual", "isCorrect": false },
+            { "id": "cca-002-4", "answerText": "Verbal visuográfica", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "cc-q-003",
+          "questionText": "El texto que relata el nacimiento de Emilio y las acciones de sus padres en el hospital es:",
+          "explanationText": "Es un texto narrativo porque relata una secuencia de hechos realizados por personajes en un tiempo y espacio.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco UNSAAC",
+          "answers": [
+            { "id": "cca-003-1", "answerText": "Narrativo", "isCorrect": true },
+            { "id": "cca-003-2", "answerText": "Argumentativo", "isCorrect": false },
+            { "id": "cca-003-3", "answerText": "Expositivo", "isCorrect": false },
+            { "id": "cca-003-4", "answerText": "Descriptivo", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "cc-q-006",
+          "questionText": "El texto que brinda instrucciones para cocinar lentejas (remojar, lavar, hervir) se clasifica como:",
+          "explanationText": "Es un texto instructivo porque su función principal es guiar u orientar la ejecución de una tarea paso a paso.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Simulacro UNSAAC",
+          "answers": [
+            { "id": "cca-006-1", "answerText": "Expositivo", "isCorrect": false },
+            { "id": "cca-006-2", "answerText": "Descriptivo", "isCorrect": false },
+            { "id": "cca-006-3", "answerText": "Instructivo", "isCorrect": true },
+            { "id": "cca-006-4", "answerText": "Dialogado", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "cc-q-010",
+          "questionText": "Señale la opción en cuyas palabras se establece relación de hiperonimia:",
+          "explanationText": "Aeronave es el hiperónimo (término general) que incluye al helicóptero (hipónimo, término específico).",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión 2026",
+          "answers": [
+            { "id": "cca-010-1", "answerText": "Garbanzos-legumbres", "isCorrect": false },
+            { "id": "cca-010-2", "answerText": "Aeronave-helicóptero", "isCorrect": true },
+            { "id": "cca-010-3", "answerText": "Amarillo-rosado", "isCorrect": false },
+            { "id": "cca-010-4", "answerText": "Hombro-espalda", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cc-9999-003",
+      "title": "Ortografía, Puntuación y Semántica",
+      "description": "Uso de dos puntos, homonimia, triptongos y ortografía de la G/J.",
+      "questions": [
+        {
+          "id": "cc-q-004",
+          "questionText": "Marque la opción en la que se establece relación de homonimia absoluta:",
+          "explanationText": "Habría (de haber) y abría (de abrir) son homónimos absolutos porque suenan igual pero tienen significados y orígenes distintos.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Comunicación",
+          "answers": [
+            { "id": "cca-004-1", "answerText": "Jorge habría vendido / no abría la tienda", "isCorrect": true },
+            { "id": "cca-004-2", "answerText": "Estudio en el área de estudio", "isCorrect": false },
+            { "id": "cca-004-3", "answerText": "Basto yo / vasto hombre", "isCorrect": false },
+            { "id": "cca-004-4", "answerText": "Proposición / preposición", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "cc-q-005",
+          "questionText": "Determinar cuál de las siguientes opciones presenta uso incorrecto de los dos puntos:",
+          "explanationText": "No se usan dos puntos para separar el verbo de su complemento directo o circunstancial de forma injustificada.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen Ordinario",
+          "answers": [
+            { "id": "cca-005-1", "answerText": "Para el desayuno: prefiero los bocaditos", "isCorrect": true },
+            { "id": "cca-005-2", "answerText": "Ingredientes: maíz y chuño", "isCorrect": false },
+            { "id": "cca-005-3", "answerText": "Desaprobó: perdió la beca", "isCorrect": false },
+            { "id": "cca-005-4", "answerText": "Tres cosas: salud, dinero y amor", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "cc-q-009",
+          "questionText": "Grupo de palabras correctamente escritas:",
+          "explanationText": "Jocundo (alegre), exégesis (interpretación) y enigmático (misterioso) cumplen con las reglas ortográficas.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco UNSAAC",
+          "answers": [
+            { "id": "cca-009-1", "answerText": "Giboso / Correjir / Surjir", "isCorrect": false },
+            { "id": "cca-009-2", "answerText": "Cronolojía / Intelijente", "isCorrect": false },
+            { "id": "cca-009-3", "answerText": "Jocundo / Exégesis / Enigmático", "isCorrect": true },
+            { "id": "cca-009-4", "answerText": "Naufrajio / Rejistrar", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "cc-q-013",
+          "questionText": "¿Qué palabra del texto sobre el partido Perú vs Paraguay contiene triptongo?",
+          "explanationText": "Paraguay contiene triptongo (u-a-y) porque la 'y' al final de palabra suena como vocal 'i' y forma una sola sílaba con 'ua'.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Simulacro UNSAAC",
+          "answers": [
+            { "id": "cca-013-1", "answerText": "periquear", "isCorrect": false },
+            { "id": "cca-013-2", "answerText": "Paraguay", "isCorrect": true },
+            { "id": "cca-013-3", "answerText": "quiebra", "isCorrect": false },
+            { "id": "cca-013-4", "answerText": "quiosco", "isCorrect": false }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,199 @@
+{
+  "course": {
+    "id": "55555555-5555-5555-5555-555555555555",
+    "name": "Historia Universal",
+    "colorTheme": "#7c2d12",
+    "iconUrl": "/icons/world-history.svg "
+  },
+  "lessons": [
+    {
+      "id": "66666666-6666-6666-6666-666666666661",
+      "title": "Hominización y Primeras Civilizaciones",
+      "description": "Desde el surgimiento del Homo sapiens hasta los aportes de Mesopotamia y Grecia.",
+      "questions": [
+        {
+          "id": "his-q-005",
+          "questionText": "Especie humana que fabricaba herramientas complejas de hueso, vestimentas de piel y es autora del arte rupestre:",
+          "explanationText": "El Homo sapiens sapiens, surgido hace aproximadamente 180,000 años, es el creador de las expresiones artísticas y tecnológicas más sofisticadas de la prehistoria.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión UNSAAC",
+          "answers": [
+            { "id": "his-a-005-1", "answerText": "Homo habilis", "isCorrect": false },
+            { "id": "his-a-005-2", "answerText": "Homo sapiens sapiens", "isCorrect": true },
+            { "id": "his-a-005-3", "answerText": "Homo erectus", "isCorrect": false },
+            { "id": "his-a-005-4", "answerText": "Australopithecus", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "his-q-002",
+          "questionText": "¿Cuál de las siguientes proposiciones NO corresponde a la astronomía Caldeo-Asiria?",
+          "explanationText": "Los mesopotámicos inventaron el calendario lunar de doce meses. Otros aportes como el zodiaco, el sistema sexagesimal y la división de la circunferencia son correctos.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Historia",
+          "answers": [
+            { "id": "his-a-002-1", "answerText": "División de la circunferencia en 360°", "isCorrect": false },
+            { "id": "his-a-002-2", "answerText": "Calendario lunar de trece meses", "isCorrect": true },
+            { "id": "his-a-002-3", "answerText": "Identificación de planetas", "isCorrect": false },
+            { "id": "his-a-002-4", "answerText": "Signos zodiacales", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "his-q-010",
+          "questionText": "La ciudad-estado griega que se caracterizó por su formación militar rígida y su gobierno oligárquico fue:",
+          "explanationText": "Esparta priorizó la educación militar (agoge) y el control estatal sobre el individuo, a diferencia de la democracia ateniense.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión UNSAAC",
+          "answers": [
+            { "id": "his-a-010-1", "answerText": "Atenas", "isCorrect": false },
+            { "id": "his-a-010-2", "answerText": "Esparta", "isCorrect": true },
+            { "id": "his-a-010-3", "answerText": "Tebas", "isCorrect": false },
+            { "id": "his-a-010-4", "answerText": "Corinto", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "his-q-011",
+          "questionText": "El Código de Hammurabi, uno de los conjuntos de leyes más antiguos, se basa en el principio de:",
+          "explanationText": "La Ley del Talión ('Ojo por ojo, diente por diente') establecía castigos físicos proporcionales al daño causado.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen Ordinario",
+          "answers": [
+            { "id": "his-a-011-1", "answerText": "El derecho natural", "isCorrect": false },
+            { "id": "his-a-011-2", "answerText": "La Ley del Talión", "isCorrect": true },
+            { "id": "his-a-011-3", "answerText": "La presunción de inocencia", "isCorrect": false },
+            { "id": "his-a-011-4", "answerText": "El juicio por jurados", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "66666666-6666-6666-6666-666666666662",
+      "title": "Edad Media y Educación",
+      "description": "El sistema feudal y la organización de las Siete Artes Liberales.",
+      "questions": [
+        {
+          "id": "his-q-003",
+          "questionText": "En la educación medieval, las siete artes liberales estaban divididas en:",
+          "explanationText": "El Trivium incluía las letras (gramática, retórica, dialéctica) y el Quadrivium las ciencias (aritmética, geometría, astronomía, música).",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen Ordinario",
+          "answers": [
+            { "id": "his-a-003-1", "answerText": "Teología y Filosofía", "isCorrect": false },
+            { "id": "his-a-003-2", "answerText": "Trivium y Quadrivium", "isCorrect": true },
+            { "id": "his-a-003-3", "answerText": "Escolástica y Patrística", "isCorrect": false },
+            { "id": "his-a-003-4", "answerText": "Cánones y Decretales", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "his-q-012",
+          "questionText": "La base económica del sistema feudal durante la Edad Media fue:",
+          "explanationText": "El feudalismo se basaba en la propiedad de la tierra (feudo) y la explotación agropecuaria bajo el régimen de servidumbre.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco UNSAAC",
+          "answers": [
+            { "id": "his-a-012-1", "answerText": "El comercio marítimo", "isCorrect": false },
+            { "id": "his-a-012-2", "answerText": "La agricultura y tenencia de tierras", "isCorrect": true },
+            { "id": "his-a-012-3", "answerText": "La industria manufacturera", "isCorrect": false },
+            { "id": "his-a-012-4", "answerText": "El intercambio de metales preciosos", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "his-q-013",
+          "questionText": "El conflicto bélico que enfrentó a Inglaterra y Francia entre los siglos XIV y XV se denomina:",
+          "explanationText": "La Guerra de los Cien Años duró de 1337 a 1453 y marcó el fin del periodo medieval.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Historia Universal",
+          "answers": [
+            { "id": "his-a-013-1", "answerText": "Guerra de las Cruzadas", "isCorrect": false },
+            { "id": "his-a-013-2", "answerText": "Guerra de los Cien Años", "isCorrect": true },
+            { "id": "his-a-013-3", "answerText": "Guerra de las Rosas", "isCorrect": false },
+            { "id": "his-a-013-4", "answerText": "Guerra de los Treinta Años", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "his-q-014",
+          "questionText": "El movimiento filosófico y pedagógico de la Edad Media que buscaba conciliar la fe con la razón se llama:",
+          "explanationText": "La Escolástica, cuyo máximo representante fue Santo Tomás de Aquino, utilizó la lógica aristotélica para explicar la teología.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión UNSAAC",
+          "answers": [
+            { "id": "his-a-014-1", "answerText": "Humanismo", "isCorrect": false },
+            { "id": "his-a-014-2", "answerText": "Escolástica", "isCorrect": true },
+            { "id": "his-a-014-3", "answerText": "Ilustración", "isCorrect": false },
+            { "id": "his-a-014-4", "answerText": "Naturalismo", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "66666666-6666-6666-6666-666666666663",
+      "title": "Revoluciones y Edad Contemporánea",
+      "description": "La Ilustración, Independencia de EE.UU. y la Primera Guerra Mundial.",
+      "questions": [
+        {
+          "id": "his-q-001",
+          "questionText": "¿En qué obra se fundamenta la necesidad de la división de poderes del Estado?",
+          "explanationText": "Montesquieu propuso la separación de poderes (Ejecutivo, Legislativo y Judicial) en su obra 'El espíritu de las leyes' (1748).",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Simulacro UNSAAC",
+          "answers": [
+            { "id": "his-a-001-1", "answerText": "El contrato social", "isCorrect": false },
+            { "id": "his-a-001-2", "answerText": "El espíritu de las leyes", "isCorrect": true },
+            { "id": "his-a-001-3", "answerText": "Cartas persas", "isCorrect": false },
+            { "id": "his-a-001-4", "answerText": "Diccionario filosófico", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "his-q-007",
+          "questionText": "La pérdida de empleos y el predominio de la cultura norteamericana tras la 1ra Guerra Mundial son consecuencias de tipo:",
+          "explanationText": "Estos cambios afectan directamente las dinámicas de la población y sus formas de vida, por lo que son consecuencias sociales.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión 2026",
+          "answers": [
+            { "id": "his-a-007-1", "answerText": "Político", "isCorrect": false },
+            { "id": "his-a-007-2", "answerText": "Social", "isCorrect": true },
+            { "id": "his-a-007-3", "answerText": "Económico", "isCorrect": false },
+            { "id": "his-a-007-4", "answerText": "Ideológico", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "his-q-015",
+          "questionText": "El detonante inmediato que inició la Primera Guerra Mundial en 1914 fue:",
+          "explanationText": "El asesinato del archiduque Francisco Fernando, heredero al trono austrohúngaro, en Sarajevo activó el sistema de alianzas.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Historia",
+          "answers": [
+            { "id": "his-a-015-1", "answerText": "La invasión a Polonia", "isCorrect": false },
+            { "id": "his-a-015-2", "answerText": "El atentado de Sarajevo", "isCorrect": true },
+            { "id": "his-a-015-3", "answerText": "El hundimiento del Lusitania", "isCorrect": false },
+            { "id": "his-a-015-4", "answerText": "La Revolución Rusa", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "his-q-016",
+          "questionText": "El movimiento intelectual del siglo XVIII que sostenía que la razón podía sacar a la humanidad de la ignorancia se llamó:",
+          "explanationText": "La Ilustración (o Siglo de las Luces) fue un movimiento cultural que defendía el uso de la razón frente al absolutismo y la superstición.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión 2026",
+          "answers": [
+            { "id": "his-a-016-1", "answerText": "Renacimiento", "isCorrect": false },
+            { "id": "his-a-016-2", "answerText": "Ilustración", "isCorrect": true },
+            { "id": "his-a-016-3", "answerText": "Barroco", "isCorrect": false },
+            { "id": "his-a-016-4", "answerText": "Modernismo", "isCorrect": false }
+          ]
+        }
+      ]
+    }
+  ]
+}

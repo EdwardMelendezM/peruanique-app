@@ -1,0 +1,115 @@
+{
+  "course": {
+    "id": "77777777-7777-7777-7777-777777777777",
+    "name": "Cívica y Constitución",
+    "colorTheme": "#b91c1c",
+    "iconUrl": "/icons/civics.svg"
+  },
+  "lessons": [
+    {
+      "id": "88888888-8888-8888-8888-888888888882",
+      "title": "La Persona y Derechos Humanos",
+      "description": "Definiciones jurídicas de la persona y clasificación de los derechos por generaciones.",
+      "questions": [
+        {
+          "id": "q-civ-001",
+          "questionText": "Sobre la Persona, señale la alternativa incorrecta:",
+          "explanationText": "La persona no es 'solo lo corpóreo'; posee dimensiones psíquicas y espirituales, además de ser sujeto de derecho por su dignidad inherente.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen Ordinario UNSAAC",
+          "answers": [
+            { "id": "a-001-1", "answerText": "Es el fin supremo de la sociedad y el Estado", "isCorrect": false },
+            { "id": "a-001-2", "answerText": "Es realidad material y espiritual", "isCorrect": false },
+            { "id": "a-001-3", "answerText": "Es solo lo corpóreo pero sujeto a derecho", "isCorrect": true },
+            { "id": "a-001-4", "answerText": "Posee derechos inherentes a su naturaleza", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "q-civ-013",
+          "questionText": "Sobre la clasificación de los derechos, ¿qué relación es correcta?",
+          "explanationText": "1ra Gen: Individual (tránsito), 2da Gen: Colectivo/Económico (salario), 3ra Gen: Global (autodeterminación).",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Cívica UNSAAC",
+          "answers": [
+            { "id": "a-013-1", "answerText": "1, 3 y 4 son ciertas", "isCorrect": true },
+            { "id": "a-013-2", "answerText": "Solo 1 y 4", "isCorrect": false },
+            { "id": "a-013-3", "answerText": "Todas son falsas", "isCorrect": false },
+            { "id": "a-013-4", "answerText": "Solo 2 y 3", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "88888888-8888-8888-8888-888888888883",
+      "title": "Estructura del Estado Peruano",
+      "description": "Poderes del Estado y Organismos Constitucionales Autónomos.",
+      "questions": [
+        {
+          "id": "q-civ-002",
+          "questionText": "El jefe supremo de las Fuerzas Armadas y de la Policía Nacional en el Perú es el:",
+          "explanationText": "Según el artículo 167 de la Constitución, el Presidente de la República es el Jefe Supremo de las FF.AA. y PNP.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Simulacro UNSAAC",
+          "answers": [
+            { "id": "a-002-1", "answerText": "Jefe del Comando Conjunto", "isCorrect": false },
+            { "id": "a-002-2", "answerText": "Presidente de la República", "isCorrect": true },
+            { "id": "a-002-3", "answerText": "Ministro del Interior", "isCorrect": false },
+            { "id": "a-002-4", "answerText": "Presidente del Congreso", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "q-civ-005",
+          "questionText": "El Contralor General de la República puede ser removido por:",
+          "explanationText": "Aunque lo propone el Ejecutivo, su remoción es facultad exclusiva del Congreso por falta grave.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen de Admisión",
+          "answers": [
+            { "id": "a-005-1", "answerText": "Congreso de la República", "isCorrect": true },
+            { "id": "a-005-2", "answerText": "Poder Judicial", "isCorrect": false },
+            { "id": "a-005-3", "answerText": "Defensoría del Pueblo", "isCorrect": false },
+            { "id": "a-005-4", "answerText": "Presidente del Consejo de Ministros", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "88888888-8888-8888-8888-888888888884",
+      "title": "Organismos Internacionales",
+      "description": "Funciones de la ONU y sus dependencias especializadas.",
+      "questions": [
+        {
+          "id": "q-civ-003",
+          "questionText": "Organismo de la ONU encargado de promover la educación, ciencia y cultura:",
+          "explanationText": "La UNESCO orienta a los pueblos a través de recursos naturales y valores culturales.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco UNSAAC",
+          "answers": [
+            { "id": "a-003-1", "answerText": "UNICEF", "isCorrect": false },
+            { "id": "a-003-2", "answerText": "UNESCO", "isCorrect": true },
+            { "id": "a-003-3", "answerText": "OMS", "isCorrect": false },
+            { "id": "a-003-4", "answerText": "OEA", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "q-civ-004",
+          "questionText": "La Declaración Universal de los Derechos Humanos fue proclamada por la ONU en el año:",
+          "explanationText": "Fue aprobada por la Asamblea General de las Naciones Unidas el 10 de diciembre de 1948.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen Ordinario",
+          "answers": [
+            { "id": "a-004-1", "answerText": "1945", "isCorrect": false },
+            { "id": "a-004-2", "answerText": "1948", "isCorrect": true },
+            { "id": "a-004-3", "answerText": "1950", "isCorrect": false },
+            { "id": "a-004-4", "answerText": "1789", "isCorrect": false }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "course": {
+    "id": "22222222-2222-2222-2222-222222222222",
+    "name": "Economía",
+    "colorTheme": "#059669",
+    "iconUrl": ""
+  },
+  "lessons": [
+    {
+      "id": "33333333-3333-3333-3333-333333333331",
+      "title": "Fundamentos y Microeconomía",
+      "description": "Necesidades humanas, proceso económico y teoría del mercado.",
+      "questions": [
+        {
+          "id": "eco-q-001",
+          "questionText": "Cuando una necesidad puede ser satisfecha por diversos bienes sustitutos, se cumple la característica de:",
+          "explanationText": "La ley de los equivalentes económicos explica que una misma necesidad puede ser reemplazada por diferentes formas de satisfacción.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión UNSAAC",
+          "answers": [
+            { "id": "eco-a-001-1", "answerText": "Limitada en número", "isCorrect": false },
+            { "id": "eco-a-001-2", "answerText": "Ley de los equivalentes", "isCorrect": true },
+            { "id": "eco-a-001-3", "answerText": "Complementaria", "isCorrect": false },
+            { "id": "eco-a-001-4", "answerText": "Fijación", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "eco-q-008",
+          "questionText": "La situación de mercado donde existen muchos productores pero un solo consumidor se denomina:",
+          "explanationText": "El monopsonio es un fallo de mercado donde el único comprador tiene poder sobre el precio de los vendedores.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco UNSAAC",
+          "answers": [
+            { "id": "eco-a-008-1", "answerText": "Monopolio", "isCorrect": false },
+            { "id": "eco-a-008-2", "answerText": "Oligopolio", "isCorrect": false },
+            { "id": "eco-a-008-3", "answerText": "Monopsonio", "isCorrect": true },
+            { "id": "eco-a-008-4", "answerText": "Duopolio", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "33333333-3333-3333-3333-333333333332",
+      "title": "Sistema Financiero y Crédito",
+      "description": "Documentos de crédito, tasas de interés y banca central.",
+      "questions": [
+        {
+          "id": "eco-q-002",
+          "questionText": "¿Cuál es el documento de crédito de más alto riesgo en caso de extravío por no requerir identificación previa del beneficiario?",
+          "explanationText": "El cheque al portador puede ser cobrado por cualquier poseedor físico, lo que eleva el riesgo ante pérdida.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen Ordinario",
+          "answers": [
+            { "id": "eco-a-002-1", "answerText": "Warrant", "isCorrect": false },
+            { "id": "eco-a-002-2", "answerText": "Letra de cambio", "isCorrect": false },
+            { "id": "eco-a-002-3", "answerText": "Cheque al portador", "isCorrect": true },
+            { "id": "eco-a-002-4", "answerText": "Vale", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "eco-q-004",
+          "questionText": "La tasa de interés que las entidades bancarias pagan a sus clientes por los depósitos captados es la:",
+          "explanationText": "La tasa pasiva representa el costo que el banco asume por captar recursos del público.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Economía",
+          "answers": [
+            { "id": "eco-a-004-1", "answerText": "Tasa activa", "isCorrect": false },
+            { "id": "eco-a-004-2", "answerText": "Tasa pasiva", "isCorrect": true },
+            { "id": "eco-a-004-3", "answerText": "Tasa legal", "isCorrect": false },
+            { "id": "eco-a-004-4", "answerText": "Tasa compensatoria", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "33333333-3333-3333-3333-333333333333",
+      "title": "Macroeconomía y Políticas Públicas",
+      "description": "Inflación, ciclos económicos y política monetaria/fiscal.",
+      "questions": [
+        {
+          "id": "eco-q-010",
+          "questionText": "Indique la secuencia correcta de las fases del ciclo económico:",
+          "explanationText": "El ciclo sigue un orden de Depresión, Recuperación, Auge y finalmente Recesión.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Simulacro UNSAAC",
+          "answers": [
+            { "id": "eco-a-010-1", "answerText": "Auge - Recesión - Depresión - Recuperación", "isCorrect": false },
+            { "id": "eco-a-010-2", "answerText": "Depresión - Recuperación - Auge - Recesión", "isCorrect": true },
+            { "id": "eco-a-010-3", "answerText": "Recuperación - Auge - Recesión - Depresión", "isCorrect": false },
+            { "id": "eco-a-010-4", "answerText": "Depresión - Auge - Recuperación - Recesión", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "eco-q-012",
+          "questionText": "¿Qué medidas corresponden a una política monetaria expansiva por parte del BCRP?",
+          "explanationText": "La política expansiva busca inyectar dinero reduciendo el encaje bancario y la tasa de interés de referencia.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión 2026",
+          "answers": [
+            { "id": "eco-a-012-1", "answerText": "Reducir tasa de interés y reducir encaje", "isCorrect": true },
+            { "id": "eco-a-012-2", "answerText": "Aumentar tasa de interés y vender deuda", "isCorrect": false },
+            { "id": "eco-a-012-3", "answerText": "Aumentar encaje y reducir tasa", "isCorrect": false },
+            { "id": "eco-a-012-4", "answerText": "Vender deuda y reducir encaje", "isCorrect": false }
+          ]
+        }
+      ]
+    }
+  ]
+}

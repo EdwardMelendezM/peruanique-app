@@ -1,0 +1,199 @@
+{
+  "course": {
+    "id": "88888888-8888-8888-8888-888888888888",
+    "name": "Biología",
+    "colorTheme": "#16a34a",
+    "iconUrl": "/icons/biology.svg"
+  },
+  "lessons": [
+    {
+      "id": "b-9999-001",
+      "title": "Bioquímica y Citología",
+      "description": "Estudio de las macromoléculas, organelos celulares y metabolismo energético.",
+      "questions": [
+        {
+          "id": "bio-q-001",
+          "questionText": "Polímero de reserva energética vegetal abundante en los tubérculos, utilizado para la alimentación:",
+          "explanationText": "El almidón es el polisacárido de reserva por excelencia en vegetales. Está compuesto por unidades de glucosa.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión UNSAAC",
+          "answers": [
+            { "id": "ba-001-1", "answerText": "Glucógeno", "isCorrect": false },
+            { "id": "ba-001-2", "answerText": "Almidón", "isCorrect": true },
+            { "id": "ba-001-3", "answerText": "Celulosa", "isCorrect": false },
+            { "id": "ba-001-4", "answerText": "Quitina", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "bio-q-003",
+          "questionText": "Los productos finales de la fase luminosa de la fotosíntesis son:",
+          "explanationText": "En la fase luminosa se produce ATP, NADPH y se libera Oxígeno (O2) por fotólisis del agua.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Biología",
+          "answers": [
+            { "id": "ba-003-1", "answerText": "NADPH, ATP y oxígeno molecular", "isCorrect": true },
+            { "id": "ba-003-2", "answerText": "Glucosa, ATP y oxígeno molecular", "isCorrect": false },
+            { "id": "ba-003-3", "answerText": "Ribulosa y CO2", "isCorrect": false },
+            { "id": "ba-003-4", "answerText": "Agua y Glucosa", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "bio-q-012",
+          "questionText": "¿A qué etapa de la meiosis pertenecen los periodos de leptoteno, cigoteno, paquiteno y diploteno?",
+          "explanationText": "La Profase I es la fase más larga y compleja de la meiosis I, donde ocurre el crossing-over.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Simulacro Biomédicas",
+          "answers": [
+            { "id": "ba-012-1", "answerText": "Profase I", "isCorrect": true },
+            { "id": "ba-012-2", "answerText": "Telofase I", "isCorrect": false },
+            { "id": "ba-012-3", "answerText": "Metafase I", "isCorrect": false },
+            { "id": "ba-012-4", "answerText": "Anafase I", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "bio-q-009",
+          "questionText": "Si suprimimos el aparato de Golgi, una de las estructuras que estará carente en la célula animal será:",
+          "explanationText": "El aparato de Golgi se encarga de la formación de lisosomas y peroxisomas.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión UNSAAC",
+          "answers": [
+            { "id": "ba-009-1", "answerText": "Retículo endoplásmico liso", "isCorrect": false },
+            { "id": "ba-009-2", "answerText": "Peroxisomas", "isCorrect": true },
+            { "id": "ba-009-3", "answerText": "Mitocondrias", "isCorrect": false },
+            { "id": "ba-009-4", "answerText": "Ribosomas", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b-9999-002",
+      "title": "Anatomía y Fisiología Humana",
+      "description": "Sistemas de control, coordinación nerviosa y digestión.",
+      "questions": [
+        {
+          "id": "bio-q-011",
+          "questionText": "La capacidad del cuerpo para restablecer el equilibrio hídrico mediante la reabsorción de agua en los riñones se denomina:",
+          "explanationText": "La homeostasis es el mantenimiento del equilibrio interno frente a cambios externos.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión UNSAAC",
+          "answers": [
+            { "id": "ba-011-1", "answerText": "Metabolismo", "isCorrect": false },
+            { "id": "ba-011-2", "answerText": "Homeostasis", "isCorrect": true },
+            { "id": "ba-011-3", "answerText": "Adaptación", "isCorrect": false },
+            { "id": "ba-011-4", "answerText": "Irritabilidad", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "bio-q-024",
+          "questionText": "La meninge que forma un espacio por donde circula el líquido cefalorraquídeo es la:",
+          "explanationText": "El líquido cefalorraquídeo circula por el espacio subaracnoideo, ubicado bajo la capa aracnoides.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Anatomía",
+          "answers": [
+            { "id": "ba-024-1", "answerText": "Piamadre", "isCorrect": false },
+            { "id": "ba-024-2", "answerText": "Aracnoides", "isCorrect": true },
+            { "id": "ba-024-3", "answerText": "Duramadre", "isCorrect": false },
+            { "id": "ba-024-4", "answerText": "Epidural", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "bio-q-005",
+          "questionText": "Indique la proposición INCORRECTA sobre el Sistema Nervioso Central:",
+          "explanationText": "El área de Broca se ubica en el lóbulo frontal, no detrás de la corteza auditiva primaria.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen Ordinario",
+          "answers": [
+            { "id": "ba-005-1", "answerText": "El cerebelo coordina músculos esqueléticos", "isCorrect": false },
+            { "id": "ba-005-2", "answerText": "El área de Broca está detrás de la corteza auditiva", "isCorrect": true },
+            { "id": "ba-005-3", "answerText": "El bulbo raquídeo es centro del vómito", "isCorrect": false },
+            { "id": "ba-005-4", "answerText": "La protuberancia posee área apneústica", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "bio-q-015",
+          "questionText": "Durante la digestión, los ácidos grasos de cadena larga entran en circulación a través de la ruta:",
+          "explanationText": "Los ácidos grasos de 14 o más carbonos se esterifican y viajan por la ruta linfática como quilomicrones.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Biología",
+          "answers": [
+            { "id": "ba-015-1", "answerText": "Sanguínea como ácidos grasos libres", "isCorrect": false },
+            { "id": "ba-015-2", "answerText": "Linfática en forma de quilomicrones", "isCorrect": true },
+            { "id": "ba-015-3", "answerText": "Hepática como acilglicéridos", "isCorrect": false },
+            { "id": "ba-015-4", "answerText": "Sanguínea como gotitas emulsificadas", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b-9999-003",
+      "title": "Ecología y Áreas Naturales Protegidas (ANP)",
+      "description": "Sucesión ecológica, contaminación y conservación en el Perú.",
+      "questions": [
+        {
+          "id": "bio-q-022",
+          "questionText": "¿Qué categoría de ANP protege con carácter de intangible los recursos y es de gran extensión?",
+          "explanationText": "El Parque Nacional protege ecosistemas de forma intangible, permitiendo solo turismo e investigación.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Geografía/Biología UNSAAC",
+          "answers": [
+            { "id": "ba-022-1", "answerText": "Reserva Nacional", "isCorrect": false },
+            { "id": "ba-022-2", "answerText": "Parque Nacional", "isCorrect": true },
+            { "id": "ba-022-3", "answerText": "Santuario Histórico", "isCorrect": false },
+            { "id": "ba-022-4", "answerText": "Coto de Caza", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "bio-q-025",
+          "questionText": "Relacione el ANP con el organismo que conserva: (I) Calipuy, (II) Ampay, (III) Río Abiseo, (IV) Manglares de Tumbes.",
+          "explanationText": "I: Guanacos, II: Intimpas, III: Mono choro, IV: Cocodrilo americano.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen de Admisión",
+          "answers": [
+            { "id": "ba-025-1", "answerText": "Ic, IId, IIIa, IVb", "isCorrect": true },
+            { "id": "ba-025-2", "answerText": "Ia, IId, IIIc, IVb", "isCorrect": false },
+            { "id": "ba-025-3", "answerText": "Id, IIc, IIIa, IVb", "isCorrect": false },
+            { "id": "ba-025-4", "answerText": "Ic, IIa, IIId, IVb", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "bio-q-008",
+          "questionText": "La aparición de nuevas plantas tras la tala de árboles es un ejemplo de sucesión ecológica:",
+          "explanationText": "La sucesión secundaria ocurre tras una perturbación en una comunidad previa (tala, incendio).",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión 2026",
+          "answers": [
+            { "id": "ba-008-1", "answerText": "Primaria", "isCorrect": false },
+            { "id": "ba-008-2", "answerText": "Secundaria", "isCorrect": true },
+            { "id": "ba-008-3", "answerText": "Evolutiva", "isCorrect": false },
+            { "id": "ba-008-4", "answerText": "Clímax", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "bio-q-019",
+          "questionText": "El pesticida DDT se acumula fácilmente en los animales dentro del tejido:",
+          "explanationText": "Al ser liposoluble, el DDT se bioacumula en el tejido adiposo (grasa) de los organismos.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Ecología",
+          "answers": [
+            { "id": "ba-019-1", "answerText": "Muscular", "isCorrect": false },
+            { "id": "ba-019-2", "answerText": "Adiposo", "isCorrect": true },
+            { "id": "ba-019-3", "answerText": "Nervioso", "isCorrect": false },
+            { "id": "ba-019-4", "answerText": "Epitelial", "isCorrect": false }
+          ]
+        }
+      ]
+    }
+  ]
+}

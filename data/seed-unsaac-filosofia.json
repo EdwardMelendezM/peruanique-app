@@ -1,0 +1,199 @@
+{
+  "course": {
+    "id": "33333333-3333-3333-3333-333333333333",
+    "name": "Filosofía y Lógica",
+    "colorTheme": "#6366f1",
+    "iconUrl": "/icons/philosophy.svg"
+  },
+  "lessons": [
+    {
+      "id": "44444444-4444-4444-4444-444444444441",
+      "title": "Historia de la Filosofía y Epistemología",
+      "description": "De la dialéctica platónica al pragmatismo y la filosofía en el Perú.",
+      "questions": [
+        {
+          "id": "phi-q-001",
+          "questionText": "La filosofía entendida como dialéctica para acceder a la esencia de las ideas es un postulado de:",
+          "explanationText": "Platón utiliza la dialéctica como el método supremo para ascender del mundo sensible al mundo inteligible (las ideas).",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión UNSAAC",
+          "answers": [
+            { "id": "phi-a-001-1", "answerText": "Hegel", "isCorrect": false },
+            { "id": "phi-a-001-2", "answerText": "Platón", "isCorrect": true },
+            { "id": "phi-a-001-3", "answerText": "Marx", "isCorrect": false },
+            { "id": "phi-a-001-4", "answerText": "Aristóteles", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "phi-q-003",
+          "questionText": "¿Qué pensador sostuvo que la filosofía en el Perú es inauténtica y alienada por copiar moldes europeos?",
+          "explanationText": "Augusto Salazar Bondy planteó en su obra '¿Existe una filosofía de nuestra América?' que nuestra filosofía es inauténtica debido a la dominación y dependencia cultural.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Filosofía",
+          "answers": [
+            { "id": "phi-a-003-1", "answerText": "Leopoldo Zea", "isCorrect": false },
+            { "id": "phi-a-003-2", "answerText": "Augusto Salazar Bondy", "isCorrect": true },
+            { "id": "phi-a-003-3", "answerText": "Alejandro Deustua", "isCorrect": false },
+            { "id": "phi-a-003-4", "answerText": "Francisco Miró Quesada", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "phi-q-004",
+          "questionText": "La teoría mecanicista sobre el origen de la vida sostiene que esta se basa en:",
+          "explanationText": "El mecanicismo explica los fenómenos vitales a través de procesos físicos y químicos, viendo a la naturaleza como una máquina.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen Ordinario",
+          "answers": [
+            { "id": "phi-a-004-1", "answerText": "El soplo divino", "isCorrect": false },
+            { "id": "phi-a-004-2", "answerText": "Los procesos físicos y químicos", "isCorrect": true },
+            { "id": "phi-a-004-3", "answerText": "La interacción de fuerzas espirituales", "isCorrect": false },
+            { "id": "phi-a-004-4", "answerText": "La creación por seres superiores", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "phi-q-011",
+          "questionText": "La disciplina filosófica que estudia el fundamento y la esencia del conocimiento se denomina:",
+          "explanationText": "La Gnoseología es la rama de la filosofía que estudia el conocimiento humano en general (origen, esencia y posibilidad).",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión UNSAAC",
+          "answers": [
+            { "id": "phi-a-011-1", "answerText": "Ontología", "isCorrect": false },
+            { "id": "phi-a-011-2", "answerText": "Gnoseología", "isCorrect": true },
+            { "id": "phi-a-011-3", "answerText": "Axiología", "isCorrect": false },
+            { "id": "phi-a-011-4", "answerText": "Ética", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444442",
+      "title": "Antropología Filosófica y Ética",
+      "description": "La naturaleza humana, la virtud aristotélica y los valores.",
+      "questions": [
+        {
+          "id": "phi-q-005",
+          "questionText": "La postura del hombre como 'ser sentimental' se opone directamente a la tesis de Aristóteles de:",
+          "explanationText": "Para Aristóteles, el rasgo distintivo del ser humano es ser un 'animal racional' (zoon logon echon).",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Simulacro UNSAAC",
+          "answers": [
+            { "id": "phi-a-005-1", "answerText": "Animal racional", "isCorrect": true },
+            { "id": "phi-a-005-2", "answerText": "Ser simbólico", "isCorrect": false },
+            { "id": "phi-a-005-3", "answerText": "Voluntad de poder", "isCorrect": false },
+            { "id": "phi-a-005-4", "answerText": "Homo faber", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "phi-q-006",
+          "questionText": "En la ética aristotélica, el hábito de actuar en el 'justo medio' entre dos extremos se denomina:",
+          "explanationText": "La virtud ética para Aristóteles consiste en el término medio entre el exceso y el defecto, determinado por la razón.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Examen Ordinario",
+          "answers": [
+            { "id": "phi-a-006-1", "answerText": "Un valor", "isCorrect": false },
+            { "id": "phi-a-006-2", "answerText": "Una virtud", "isCorrect": true },
+            { "id": "phi-a-006-3", "answerText": "Un imperativo", "isCorrect": false },
+            { "id": "phi-a-006-4", "answerText": "Una norma", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "phi-q-012",
+          "questionText": "La teoría ética que sostiene que el bien supremo es el placer se conoce como:",
+          "explanationText": "El Hedonismo (de Epicuro) identifica el bien con el placer, entendido como la ausencia de dolor en el cuerpo y turbación en el alma.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco UNSAAC",
+          "answers": [
+            { "id": "phi-a-012-1", "answerText": "Eudemonismo", "isCorrect": false },
+            { "id": "phi-a-012-2", "answerText": "Hedonismo", "isCorrect": true },
+            { "id": "phi-a-012-3", "answerText": "Estoicismo", "isCorrect": false },
+            { "id": "phi-a-012-4", "answerText": "Formalismo", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "phi-q-013",
+          "questionText": "El estudio de la jerarquía y la naturaleza de los valores es competencia de la:",
+          "explanationText": "La Axiología es la rama de la filosofía que estudia la naturaleza de los valores y los juicios valorativos.",
+          "difficulty": "BEGINNER",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión 2026",
+          "answers": [
+            { "id": "phi-a-013-1", "answerText": "Estética", "isCorrect": false },
+            { "id": "phi-a-013-2", "answerText": "Axiología", "isCorrect": true },
+            { "id": "phi-a-013-3", "answerText": "Ontología", "isCorrect": false },
+            { "id": "phi-a-013-4", "answerText": "Epistemología", "isCorrect": false }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444443",
+      "title": "Lógica Formal",
+      "description": "Silogismos, inferencias válidas y estructuras tautológicas.",
+      "questions": [
+        {
+          "id": "phi-q-009",
+          "questionText": "El esquema lógico [(p → q) ∧ ~q] → ~p corresponde a:",
+          "explanationText": "Es un razonamiento válido conocido como Modus Tollendo Tollens, cuya estructura garantiza que si el consecuente es falso, el antecedente también debe serlo.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Lógica UNSAAC",
+          "answers": [
+            { "id": "phi-a-009-1", "answerText": "Un razonamiento válido", "isCorrect": true },
+            { "id": "phi-a-009-2", "answerText": "Una proposición consistente", "isCorrect": false },
+            { "id": "phi-a-009-3", "answerText": "Una contradicción", "isCorrect": false },
+            { "id": "phi-a-009-4", "answerText": "Una falacia formal", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "phi-q-010",
+          "questionText": "¿Por qué se considera a la lógica como una ciencia formal desde Aristóteles?",
+          "explanationText": "Porque estudia la estructura o forma del pensamiento (juicios, razonamientos) prescindiendo del contenido material de las proposiciones.",
+          "difficulty": "ADVANCED",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Admisión 2026",
+          "answers": [
+            { "id": "phi-a-010-1", "answerText": "Analiza la verdad fáctica de los hechos", "isCorrect": false },
+            { "id": "phi-a-010-2", "answerText": "Estudia solo la forma o estructura", "isCorrect": true },
+            { "id": "phi-a-010-3", "answerText": "Es una rama de la psicología", "isCorrect": false },
+            { "id": "phi-a-010-4", "answerText": "Es una ciencia empírica", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "phi-q-014",
+          "questionText": "Una falacia de atingencia que apela a la fuerza o amenaza para imponer una conclusión se denomina:",
+          "explanationText": "El argumento 'ad baculum' es una falacia no formal donde se recurre a la fuerza o la amenaza en lugar de dar razones.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Banco Lógica",
+          "answers": [
+            { "id": "phi-a-014-1", "answerText": "Argumentum ad hominem", "isCorrect": false },
+            { "id": "phi-a-014-2", "answerText": "Argumentum ad baculum", "isCorrect": true },
+            { "id": "phi-a-014-3", "answerText": "Argumentum ad populum", "isCorrect": false },
+            { "id": "phi-a-014-4", "answerText": "Argumentum ad misericordiam", "isCorrect": false }
+          ]
+        },
+        {
+          "id": "phi-q-015",
+          "questionText": "Si una tabla de verdad resulta en valores de verdad (V) en todas sus filas, se denomina:",
+          "explanationText": "Una tautología es una fórmula cuya tabla de verdad siempre es verdadera, independientemente de los valores de sus componentes.",
+          "difficulty": "INTERMEDIATE",
+          "type": "MULTIPLE_CHOICE",
+          "from": "Lógica Proposicional",
+          "answers": [
+            { "id": "phi-a-015-1", "answerText": "Contradicción", "isCorrect": false },
+            { "id": "phi-a-015-2", "answerText": "Tautología", "isCorrect": true },
+            { "id": "phi-a-015-3", "answerText": "Contingencia", "isCorrect": false },
+            { "id": "phi-a-015-4", "answerText": "Consistencia", "isCorrect": false }
+          ]
+        }
+      ]
+    }
+  ]
+}
