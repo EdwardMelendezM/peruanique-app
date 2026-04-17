@@ -47,22 +47,20 @@ export async function seedGroups(client?: PrismaClient) {
   const prisma = client ?? createPrismaClient();
 
   try {
-    await prisma.$transaction(
-      GROUPS.map((group) =>
-        prisma.group.upsert({
-          where: { id: group.id },
-          update: {
-            name: group.name,
-            description: group.description,
-          },
-          create: {
-            id: group.id,
-            name: group.name,
-            description: group.description,
-          },
-        })
-      )
-    );
+    for (const group of GROUPS) {
+      await prisma.group.upsert({
+        where: { id: group.id },
+        update: {
+          name: group.name,
+          description: group.description,
+        },
+        create: {
+          id: group.id,
+          name: group.name,
+          description: group.description,
+        },
+      });
+    }
 
     console.log(`[GROUP_SEED] Seeded ${GROUPS.length} groups`);
   } finally {

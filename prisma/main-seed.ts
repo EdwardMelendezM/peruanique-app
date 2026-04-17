@@ -40,53 +40,47 @@ async function seedFile(filePath: string, prisma: PrismaClient) {
 
   console.log(`[SEED] Insertando nuevo curso: ${data.course.name}...`);
 
-  // Usamos una transacción para asegurar integridad
-  await prisma.$transaction(async (tx) => {
-    // 1. Creamos el Curso sin usar ids temporales del JSON.
-    const createdCourse = await tx.course.create({
+  // Creamos el árbol de contenido de forma secuencial para evitar cortes de conexión en poolers.
+  const createdCourse = await prisma.course.create({
+    data: {
+      name: data.course.name,
+      colorTheme: data.course.colorTheme,
+      iconUrl: data.course.iconUrl,
+    },
+  });
+
+  for (const lesson of data.lessons) {
+    const createdLesson = await prisma.lesson.create({
       data: {
-        name: data.course.name,
-        colorTheme: data.course.colorTheme,
-        iconUrl: data.course.iconUrl,
+        title: lesson.title,
+        description: lesson.description,
+        courseId: createdCourse.id,
       },
     });
 
-    for (const lesson of data.lessons) {
-      // 2. Creamos la Lección vinculada al curso.
-      const createdLesson = await tx.lesson.create({
+    for (const question of lesson.questions) {
+      const createdQuestion = await prisma.question.create({
         data: {
-          title: lesson.title,
-          description: lesson.description,
-          courseId: createdCourse.id,
+          questionText: question.questionText,
+          explanationText: question.explanationText,
+          difficulty: question.difficulty,
+          type: question.type,
+          from: question.from,
+          lessonId: createdLesson.id,
         },
       });
 
-      for (const question of lesson.questions) {
-        // 3. Creamos la Pregunta vinculada a la lección.
-        const createdQuestion = await tx.question.create({
+      for (const answer of question.answers) {
+        await prisma.answer.create({
           data: {
-            questionText: question.questionText,
-            explanationText: question.explanationText,
-            difficulty: question.difficulty,
-            type: question.type,
-            from: question.from,
-            lessonId: createdLesson.id,
+            answerText: answer.answerText,
+            isCorrect: answer.isCorrect,
+            questionId: createdQuestion.id,
           },
         });
-
-        // 4. Creamos las Respuestas vinculadas a la pregunta.
-        for (const answer of question.answers) {
-          await tx.answer.create({
-            data: {
-              answerText: answer.answerText,
-              isCorrect: answer.isCorrect,
-              questionId: createdQuestion.id,
-            },
-          });
-        }
       }
     }
-  });
+  }
   console.log(`[SUCCESS] Curso "${data.course.name}" creado con éxito.`);
 }
 
