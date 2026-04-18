@@ -68,8 +68,8 @@ export async function POST(request: NextRequest) {
         email: true,
         full_name: true,
         name: true,
-        groupId: true,
         isDisabled: true,
+        group: true
       },
     });
 

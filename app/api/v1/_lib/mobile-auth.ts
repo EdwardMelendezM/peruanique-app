@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
 import { auth } from "@/lib/auth";
+import { Group } from "@/app/generated/prisma/client"
+import { Prisma__UserClient } from "@/app/generated/prisma/models/User"
 
 export const registerBodySchema = z.object({
   email: z.string().email(),
@@ -136,14 +138,14 @@ export const mapDbUserToMobile = (user: {
   email: string;
   full_name: string;
   name: string | null;
-  groupId: string | null;
+  group?: Group | null;
   isDisabled: boolean;
 }) => ({
   id: user.id,
   email: user.email,
   username: user.name ?? "",
   fullName: user.full_name,
-  groupId: user.groupId,
+  group: user?.group ?? "",
   birthDate: null as string | null,
   isActive: !user.isDisabled,
 });
