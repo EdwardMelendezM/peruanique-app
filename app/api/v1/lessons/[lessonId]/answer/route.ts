@@ -123,7 +123,7 @@ export async function POST(
     // If correct answer, update UserProgress
     if (selectedAnswer.isCorrect && roadmapNode) {
       // Get or create UserProgress
-      let userProgress = await prisma.userProgress.findUnique({
+      const userProgress = await prisma.userProgress.findUnique({
         where: {
           userId_nodeId: {
             userId: user.id,
@@ -133,6 +133,24 @@ export async function POST(
         select: { scoreObtained: true, starsEarned: true },
       });
 
+      // Count total questions in this lesson
+      const totalQuestions = await prisma.question.count({
+        where: { lessonId },
+      });
+
+      // Count correct answers for this user in this lesson
+      const correctAnswersCount = await prisma.lessonAttempt.count({
+        where: {
+          userId: user.id,
+          nodeId: roadmapNode.id,
+          isCorrect: true,
+        },
+      });
+
+      // Determine if lesson is completed
+      // Note: We add 1 because we just created the attempt above
+      const isLessonCompleted = correctAnswersCount + 1 === totalQuestions;
+
       if (!userProgress) {
         await prisma.userProgress.create({
           data: {
@@ -140,7 +158,7 @@ export async function POST(
             nodeId: roadmapNode.id,
             scoreObtained: xpDelta,
             starsEarned: 1,
-            status: "IN_PROGRESS",
+            status: isLessonCompleted ? "COMPLETED" : "IN_PROGRESS",
           },
         });
       } else {
@@ -159,7 +177,7 @@ export async function POST(
             starsEarned: {
               increment: 1,
             },
-            status: "IN_PROGRESS",
+            status: isLessonCompleted ? "COMPLETED" : "IN_PROGRESS",
           },
         });
       }
