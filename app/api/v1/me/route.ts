@@ -18,17 +18,30 @@ const loadCurrentUser = async (request: NextRequest) => {
     return null;
   }
 
-  return prisma.user.findUnique({
+  const userData = await prisma.user.findUnique({
     where: { email: session.user.email },
     select: {
       id: true,
       email: true,
       full_name: true,
       name: true,
-      groupId: true,
+      group: true,
       isDisabled: true,
     },
   });
+
+  if (!userData) {
+    return null;
+  }
+
+  return {
+    id: userData.id,
+    email: userData.email,
+    full_name: userData.full_name,
+    name: userData.name,
+    group: userData?.group ? userData?.group  : undefined,
+    isDisabled: userData.isDisabled,
+  }
 };
 
 export async function GET(request: NextRequest) {
