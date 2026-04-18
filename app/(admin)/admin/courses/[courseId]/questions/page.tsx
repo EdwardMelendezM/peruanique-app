@@ -1,4 +1,4 @@
-import { getCourseQuestionTree } from "@/features/courses/actions/course-content-queries";
+import { getCourseQuestionsWithLessons } from "@/features/courses/actions/course-content-queries";
 import { CourseQuestionsScreen } from "@/features/courses/screens/course-questions-screen";
 
 interface CourseQuestionsPageProps {
@@ -7,7 +7,7 @@ interface CourseQuestionsPageProps {
 
 export default async function CourseQuestionsPage({ params }: CourseQuestionsPageProps) {
   const { courseId } = await params;
-  const result = await getCourseQuestionTree(courseId);
+  const result = await getCourseQuestionsWithLessons(courseId);
 
   if (!result.success) {
     return (

@@ -199,7 +199,6 @@ export function CourseQuestionsManager({ courseId, courseName, lessons }: Course
         open={createQuestionOpen}
         onOpenChange={setCreateQuestionOpen}
         courseId={courseId}
-        lessons={lessons}
       />
 
       <QuestionModal
@@ -211,7 +210,6 @@ export function CourseQuestionsManager({ courseId, courseName, lessons }: Course
           }
         }}
         courseId={courseId}
-        lessons={lessons}
         question={editingQuestion ?? undefined}
       />
 

@@ -134,7 +134,7 @@ export function RoadmapNodesManager({
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge variant="secondary">Orden {node.orderIndex}</Badge>
-                      <Badge variant="outline">{node.lessonCourseName}</Badge>
+                      {/*<Badge variant="outline">{node.lessonCourseName}</Badge>*/}
                       <Badge variant="outline">Progreso: {node.progressCount}</Badge>
                       <Badge variant="outline">Intentos: {node.attemptsCount}</Badge>
                     </div>

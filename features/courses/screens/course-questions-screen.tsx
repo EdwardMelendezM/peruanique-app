@@ -2,11 +2,11 @@ import Link from "next/link";
 import { ArrowLeft, NotebookTabs } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
-import type { CourseQuestionTree } from "../actions/course-content-queries";
+import type { CourseQuestionTreeWithLessons } from "../actions/course-content-queries";
 import { CourseQuestionsManager } from "../components/questions/course-questions-manager";
 
 interface CourseQuestionsScreenProps {
-  data: CourseQuestionTree;
+  data: CourseQuestionTreeWithLessons;
 }
 
 export function CourseQuestionsScreen({ data }: CourseQuestionsScreenProps) {

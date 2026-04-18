@@ -25,7 +25,6 @@ import {
   questionTypeValues,
 } from "../../schemas/question-answer-schemas";
 import type {
-  CourseLessonWithQuestions,
   CourseQuestionItem,
 } from "../../actions/course-content-queries";
 
@@ -33,7 +32,6 @@ interface QuestionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   courseId: string;
-  lessons: CourseLessonWithQuestions[];
   question?: CourseQuestionItem;
 }
 
@@ -53,7 +51,7 @@ const questionTypeLabel: Record<(typeof questionTypeValues)[number], string> = {
   DRAG_AND_DROP: "Arrastrar y soltar",
 };
 
-export function QuestionModal({ open, onOpenChange, courseId, lessons, question }: QuestionModalProps) {
+export function QuestionModal({ open, onOpenChange, courseId, question }: QuestionModalProps) {
   const router = useRouter();
   const action = question ? updateQuestion : createQuestion;
   const [state, formAction, isPending] = useActionState(action, initialState);
@@ -87,31 +85,6 @@ export function QuestionModal({ open, onOpenChange, courseId, lessons, question 
           <input type="hidden" name="courseId" value={courseId} />
           {question ? <input type="hidden" name="questionId" value={question.id} /> : null}
 
-          <div className="space-y-2">
-            <Label htmlFor="lessonId" className={cn(fieldErrors.lessonId && "text-destructive")}>
-              Lección
-            </Label>
-            <select
-              id="lessonId"
-              name="lessonId"
-              defaultValue={question?.lessonId ?? lessons[0]?.id ?? ""}
-              className={cn(
-                "h-10 w-full rounded-2xl border border-transparent bg-input/50 px-3 text-sm",
-                fieldErrors.lessonId && "border-destructive"
-              )}
-              aria-invalid={Boolean(fieldErrors.lessonId)}
-              disabled={lessons.length === 0 || isPending}
-            >
-              {lessons.map((lesson) => (
-                <option key={lesson.id} value={lesson.id}>
-                  {lesson.title}
-                </option>
-              ))}
-            </select>
-            {fieldErrors.lessonId ? (
-              <p className="text-xs font-semibold text-destructive">{fieldErrors.lessonId}</p>
-            ) : null}
-          </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
@@ -230,7 +203,7 @@ export function QuestionModal({ open, onOpenChange, courseId, lessons, question 
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={isPending || lessons.length === 0}>
+            <Button type="submit" disabled={isPending}>
               {isPending ? "Guardando..." : isEdit ? "Guardar cambios" : "Crear pregunta"}
             </Button>
           </DialogFooter>
