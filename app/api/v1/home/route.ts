@@ -97,20 +97,23 @@ export async function GET(request: NextRequest) {
           },
         });
 
+        const status = progress?.status || "LOCKED";
+
         return {
           id: node.id,
           lessonId: node.lessonId,
           lessonTitle: node.lesson.title,
-          status: progress?.status || "LOCKED",
+          status,
           orderIndex: node.orderIndex,
           progressPercent: progress ? Math.min((progress.scoreObtained / 100) * 100, 100) : 0,
+          isUnlocked: status !== "LOCKED", // Para la UI saber qué está disponible
         };
       })
     );
 
-    // Find next lesson
+    // Find next lesson: first lesson not completed
     const nextNode = nodes.find(
-      (n) => n.status === "IN_PROGRESS" || n.status === "LOCKED"
+      (n) => n.status !== "COMPLETED"
     );
 
     // Get recent activity
