@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
       orderBy: { orderIndex: "asc" },
     });
 
-    // Get progress for each node
+    // Get progress for each node with progressive unlock logic
     const nodes = await Promise.all(
       roadmapNodes.map(async (node) => {
         const progress = await prisma.userProgress.findUnique({
@@ -97,7 +97,30 @@ export async function GET(request: NextRequest) {
           },
         });
 
-        const status = progress?.status || "LOCKED";
+        // Progressive unlock: 
+        // - First lesson (orderIndex 1) is always unlocked
+        // - Others are unlocked only if previous is COMPLETED
+        let isUnlocked = node.orderIndex === 1; // First is always unlocked
+
+        if (!isUnlocked && node.orderIndex > 1) {
+          // Check if previous node is completed
+          const previousNode = roadmapNodes.find(n => n.id === (roadmapNodes[node.orderIndex - 2]?.id));
+          if (previousNode) {
+            const previousProgress = await prisma.userProgress.findUnique({
+              where: {
+                userId_nodeId: {
+                  userId: user.id,
+                  nodeId: previousNode.id,
+                },
+              },
+              select: { status: true },
+            });
+            isUnlocked = previousProgress?.status === "COMPLETED";
+          }
+        }
+
+        // Determine status for UI clarity
+        const status = progress?.status || (isUnlocked ? "NOT_STARTED" : "LOCKED");
 
         return {
           id: node.id,
@@ -106,7 +129,7 @@ export async function GET(request: NextRequest) {
           status,
           orderIndex: node.orderIndex,
           progressPercent: progress ? Math.min((progress.scoreObtained / 100) * 100, 100) : 0,
-          isUnlocked: status !== "LOCKED", // Para la UI saber qué está disponible
+          isUnlocked, // True if user can start this lesson
         };
       })
     );
