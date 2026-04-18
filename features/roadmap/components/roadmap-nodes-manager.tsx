@@ -43,6 +43,8 @@ export function RoadmapNodesManager({
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingNode, setEditingNode] = useState<RoadmapNodeListItem | null>(null);
 
+  const lessonsAlreadySelected = new Set(nodes.map((node) => node.lessonId));
+
   const handleGroupChange = (groupId: string) => {
     router.push(`/admin/roadmap?groupId=${groupId}`);
   };
@@ -163,6 +165,7 @@ export function RoadmapNodesManager({
         onOpenChange={setCreateModalOpen}
         groupId={selectedGroupId}
         lessons={lessons}
+        lessonsAlreadySelected={lessonsAlreadySelected}
       />
 
       <RoadmapNodeModal
@@ -176,6 +179,7 @@ export function RoadmapNodesManager({
         groupId={selectedGroupId}
         lessons={lessons}
         node={editingNode ?? undefined}
+        lessonsAlreadySelected={lessonsAlreadySelected}
       />
     </div>
   );

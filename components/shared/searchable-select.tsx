@@ -60,7 +60,10 @@ export function SearchableSelect({
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0 rounded-2xl border-border/60 shadow-2xl" align="start">
+        <PopoverContent
+          className="w-[var(--radix-popover-trigger-width)] p-0 rounded-2xl border-border/60 shadow-2xl"
+          align="start"
+        >
           <Command className="bg-card">
             <div className="flex items-center border-b border-border/50 px-3">
               {/*<Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />*/}
@@ -69,7 +72,7 @@ export function SearchableSelect({
                 className="h-11 bg-transparent outline-none placeholder:text-muted-foreground"
               />
             </div>
-            <CommandList className="custom-scrollbar">
+            <CommandList className="max-h-[300px] overflow-y-auto custom-scrollbar">
               <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
                 {emptyMessage}
               </CommandEmpty>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react"
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ import type {
   RoadmapLessonOption,
   RoadmapNodeListItem,
 } from "../actions/roadmap-node-queries";
+import { SearchableSelect } from "@/components/shared/searchable-select"
 
 interface RoadmapNodeModalProps {
   open: boolean;
@@ -31,15 +32,25 @@ interface RoadmapNodeModalProps {
   groupId: string;
   lessons: RoadmapLessonOption[];
   node?: RoadmapNodeListItem;
+  lessonsAlreadySelected: Set<string>
 }
 
 const initialState: RoadmapNodeActionState = { success: false };
 
-export function RoadmapNodeModal({ open, onOpenChange, groupId, lessons, node }: RoadmapNodeModalProps) {
+export function RoadmapNodeModal({
+                                   open,
+                                   onOpenChange,
+                                   groupId,
+                                   lessons,
+                                   node,
+                                   lessonsAlreadySelected
+}: RoadmapNodeModalProps) {
   const router = useRouter();
   const action = node ? updateRoadmapNode : createRoadmapNode;
   const [state, formAction, isPending] = useActionState(action, initialState);
 
+  const [selectedLesson, setSelectedLesson] = useState(node?.lessonId ?? "");
+  const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
   useEffect(() => {
     if (!state.success) {
       return;
@@ -52,6 +63,32 @@ export function RoadmapNodeModal({ open, onOpenChange, groupId, lessons, node }:
 
   const fieldErrors = state.fieldErrors ?? {};
   const isEdit = Boolean(node);
+
+  // Obtener cursos únicos y ordenados
+  const uniqueCourses = Array.from(
+    new Map(lessons.map(lesson => [lesson.courseName, lesson.courseName])).values()
+  ).sort();
+
+  const courseOptions = [
+    { value: "", label: "Todos los cursos" },
+    ...uniqueCourses.map(course => ({
+      value: course,
+      label: course,
+    }))
+  ];
+
+  // Filtrar lecciones por curso seleccionado y ya seleccionadas
+  const filteredLessons = lessons.filter((lesson) => {
+    const isAlreadySelected = lessonsAlreadySelected.has(lesson.id);
+    const matchesCourse = !selectedCourse || lesson.courseName === selectedCourse;
+    return !isAlreadySelected && matchesCourse;
+  });
+
+  const lessonOptions = filteredLessons.map(lesson => ({
+    value: lesson.id,
+    label: lesson.title,
+  }));
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -70,27 +107,45 @@ export function RoadmapNodeModal({ open, onOpenChange, groupId, lessons, node }:
           {node ? <input type="hidden" name="nodeId" value={node.id} /> : null}
 
           <div className="space-y-2">
+            <Label htmlFor="courseFilter">
+              Filtrar por curso
+            </Label>
+            <input type="hidden" name="courseFilter" value={selectedCourse ?? ""} />
+            <SearchableSelect
+              items={courseOptions}
+              onSelect={(value) => {
+                setSelectedCourse(value === "" ? null : value);
+                setSelectedLesson("");
+              }}
+              selectedValue={selectedCourse ?? ""}
+              placeholder="Selecciona un curso (opcional)"
+              searchPlaceholder="Buscar cursos..."
+              emptyMessage="No se encontraron cursos"
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="lessonId" className={cn(fieldErrors.lessonId && "text-destructive")}>
               Lección
             </Label>
-            <select
-              id="lessonId"
-              name="lessonId"
-              defaultValue={node?.lessonId ?? lessons[0]?.id ?? ""}
-              className={cn(
-                "h-10 w-full rounded-2xl border border-transparent bg-input/50 px-3 text-sm",
-                fieldErrors.lessonId && "border-destructive"
-              )}
-              aria-invalid={Boolean(fieldErrors.lessonId)}
-              disabled={lessons.length === 0 || isPending}
-            >
-              {lessons.map((lesson) => (
-                <option key={lesson.id} value={lesson.id}>
-                  {lesson.courseName} - {lesson.title}
-                </option>
-              ))}
-            </select>
-            {fieldErrors.lessonId ? <p className="text-xs font-semibold text-destructive">{fieldErrors.lessonId}</p> : null}
+
+            {/* El input oculto se sincroniza con el estado */}
+            <input type="hidden" name="lessonId" value={selectedLesson} />
+
+            <SearchableSelect
+              items={lessonOptions}
+              onSelect={(value) => {
+                setSelectedLesson(value ?? "");
+              }}
+              selectedValue={selectedLesson}
+              placeholder="Selecciona una lección"
+              searchPlaceholder="Buscar lecciones..."
+              emptyMessage={selectedCourse ? `No hay lecciones en ${selectedCourse}` : "No se encontraron lecciones"}
+            />
+
+            {fieldErrors.lessonId ? (
+              <p className="text-xs font-semibold text-destructive">{fieldErrors.lessonId}</p>
+            ) : null}
           </div>
 
           <div className="space-y-2">

@@ -127,3 +127,32 @@
     @apply font-sans;
     }
 }
+
+@layer utilities {
+    .custom-scrollbar {
+        /* Grosor de la barra */
+        scrollbar-width: thin;
+        /* Color del scrollbar (Firefox): [Color del "pulgar"] [Color del fondo] */
+        scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+    }
+
+    /* Chrome, Edge y Safari */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: hsl(var(--muted-foreground) / 0.3);
+        border-radius: 10px;
+        transition: background 0.2s ease;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--muted-foreground) / 0.5);
+    }
+}
