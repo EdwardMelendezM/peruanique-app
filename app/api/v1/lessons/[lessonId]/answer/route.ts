@@ -138,8 +138,10 @@ export async function POST(
         where: { lessonId },
       });
 
-      // Count correct answers for this user in this lesson
-      const correctAnswersCount = await prisma.lessonAttempt.count({
+      // Count distinct questions that have at least one correct answer
+      // This handles multiple attempts on the same question
+      const distinctQuestionsAnswered = await prisma.lessonAttempt.groupBy({
+        by: ['questionId'],
         where: {
           userId: user.id,
           nodeId: roadmapNode.id,
@@ -147,9 +149,11 @@ export async function POST(
         },
       });
 
+      const correctAnswersCount = distinctQuestionsAnswered.length;
+
       // Determine if lesson is completed
-      // Note: We add 1 because we just created the attempt above
-      const isLessonCompleted = correctAnswersCount + 1 === totalQuestions;
+      // The attempt was already created above, so we check directly
+      const isLessonCompleted = correctAnswersCount === totalQuestions;
 
       if (!userProgress) {
         await prisma.userProgress.create({
