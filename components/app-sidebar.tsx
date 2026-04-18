@@ -29,8 +29,9 @@ const navigation = [
     title: "Gestión de Contenido",
     items: [
       {title: "Dashboard", href: "/admin", icon: LayoutDashboard},
-      {title: "Cursos", href: "/admin/courses", icon: BookOpen},
       {title: "Grupos", href: "/admin/groups", icon: Users},
+      {title: "Cursos", href: "/admin/courses", icon: BookOpen},
+      {title: "Lecciones", href: "/admin/lessons", icon: BookOpen},
       {title: "Constructor Roadmap", href: "/admin/roadmap", icon: GitBranch},
     ],
   },

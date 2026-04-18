@@ -12,7 +12,7 @@ import {
   updateQuestionSchema,
 } from "../schemas/question-answer-schemas";
 
-type QuestionField = "courseId" | "questionId" | "lessonId" | "questionText" | "explanationText" | "from" | "difficulty" | "type";
+type QuestionField = "courseId" | "questionId" | "questionText" | "explanationText" | "from" | "difficulty" | "type";
 type AnswerField = "courseId" | "questionId" | "answerId" | "answerText" | "isCorrect";
 
 export type QuestionActionState = {
@@ -48,7 +48,6 @@ const ensureAuth = async () => {
 
 const mapQuestionCreateData = (formData: FormData) => ({
   courseId: getStringValue(formData.get("courseId")),
-  lessonId: getStringValue(formData.get("lessonId")),
   questionText: getStringValue(formData.get("questionText")),
   explanationText: getStringValue(formData.get("explanationText")),
   from: getStringValue(formData.get("from")),
@@ -89,39 +88,37 @@ export async function createQuestion(
       const key = issue.path[0];
       if (
         key === "courseId" ||
-        key === "lessonId" ||
         key === "questionText" ||
         key === "explanationText" ||
         key === "from" ||
         key === "difficulty" ||
         key === "type"
       ) {
-        fieldErrors[key] = issue.message;
+        fieldErrors[key as QuestionField] = issue.message;
       }
     }
 
     return { success: false, error: "Revisa los campos del formulario", fieldErrors };
   }
 
-  const lesson = await prisma.lesson.findFirst({
-    where: {
-      id: parsed.data.lessonId,
-      courseId: parsed.data.courseId,
-    },
+  // Verify course exists
+  const course = await prisma.course.findUnique({
+    where: { id: parsed.data.courseId },
     select: { id: true },
   });
 
-  if (!lesson) {
+  if (!course) {
     return {
       success: false,
-      error: "La lección no pertenece al curso seleccionado",
-      fieldErrors: { lessonId: "Selecciona una lección válida" },
+      error: "El curso no existe",
+      fieldErrors: { courseId: "Selecciona un curso válido" },
     };
   }
 
+  // Ahora la pregunta se crea directamente con courseId
   await prisma.question.create({
     data: {
-      lessonId: parsed.data.lessonId,
+      courseId: parsed.data.courseId,
       questionText: parsed.data.questionText,
       explanationText: parsed.data.explanationText,
       from: parsed.data.from,
@@ -132,10 +129,7 @@ export async function createQuestion(
 
   revalidateCourseQuestions(parsed.data.courseId);
 
-  return {
-    success: true,
-    message: "Pregunta creada correctamente",
-  };
+  return { success: true, message: "Pregunta creada exitosamente" };
 }
 
 export async function updateQuestion(
@@ -155,55 +149,35 @@ export async function updateQuestion(
       if (
         key === "courseId" ||
         key === "questionId" ||
-        key === "lessonId" ||
         key === "questionText" ||
         key === "explanationText" ||
         key === "from" ||
         key === "difficulty" ||
         key === "type"
       ) {
-        fieldErrors[key] = issue.message;
+        fieldErrors[key as QuestionField] = issue.message;
       }
     }
 
     return { success: false, error: "Revisa los campos del formulario", fieldErrors };
   }
 
-  const [existingQuestion, lesson] = await Promise.all([
-    prisma.question.findFirst({
-      where: {
-        id: parsed.data.questionId,
-        lesson: {
-          courseId: parsed.data.courseId,
-        },
-      },
-      select: { id: true },
-    }),
-    prisma.lesson.findFirst({
-      where: {
-        id: parsed.data.lessonId,
-        courseId: parsed.data.courseId,
-      },
-      select: { id: true },
-    }),
-  ]);
+  // Verify question belongs to course
+  const existingQuestion = await prisma.question.findFirst({
+    where: {
+      id: parsed.data.questionId,
+      courseId: parsed.data.courseId,
+    },
+    select: { id: true },
+  });
 
   if (!existingQuestion) {
     return { success: false, error: "La pregunta no existe o no pertenece al curso" };
   }
 
-  if (!lesson) {
-    return {
-      success: false,
-      error: "La lección no pertenece al curso seleccionado",
-      fieldErrors: { lessonId: "Selecciona una lección válida" },
-    };
-  }
-
   await prisma.question.update({
     where: { id: parsed.data.questionId },
     data: {
-      lessonId: parsed.data.lessonId,
       questionText: parsed.data.questionText,
       explanationText: parsed.data.explanationText,
       from: parsed.data.from,
@@ -234,9 +208,7 @@ export async function deleteQuestion(courseId: string, questionId: string): Prom
   const existingQuestion = await prisma.question.findFirst({
     where: {
       id: parsed.data.questionId,
-      lesson: {
-        courseId: parsed.data.courseId,
-      },
+      courseId: parsed.data.courseId,
     },
     select: {
       id: true,
@@ -280,19 +252,18 @@ export async function createAnswer(
     for (const issue of parsed.error.issues) {
       const key = issue.path[0];
       if (key === "courseId" || key === "questionId" || key === "answerText" || key === "isCorrect") {
-        fieldErrors[key] = issue.message;
+        fieldErrors[key as AnswerField] = issue.message;
       }
     }
 
     return { success: false, error: "Revisa los campos del formulario", fieldErrors };
   }
 
+  // Verify question belongs to course
   const question = await prisma.question.findFirst({
     where: {
       id: parsed.data.questionId,
-      lesson: {
-        courseId: parsed.data.courseId,
-      },
+      courseId: parsed.data.courseId,
     },
     select: { id: true },
   });
@@ -338,21 +309,20 @@ export async function updateAnswer(
         key === "answerText" ||
         key === "isCorrect"
       ) {
-        fieldErrors[key] = issue.message;
+        fieldErrors[key as AnswerField] = issue.message;
       }
     }
 
     return { success: false, error: "Revisa los campos del formulario", fieldErrors };
   }
 
+  // Verify answer belongs to question and question belongs to course
   const answer = await prisma.answer.findFirst({
     where: {
       id: parsed.data.answerId,
       questionId: parsed.data.questionId,
       question: {
-        lesson: {
-          courseId: parsed.data.courseId,
-        },
+        courseId: parsed.data.courseId,
       },
     },
     select: { id: true },
@@ -393,14 +363,13 @@ export async function deleteAnswer(
     return { success: false, error: "Solicitud inválida" };
   }
 
+  // Verify answer belongs to question and question belongs to course
   const answer = await prisma.answer.findFirst({
     where: {
       id: parsed.data.answerId,
       questionId: parsed.data.questionId,
       question: {
-        lesson: {
-          courseId: parsed.data.courseId,
-        },
+        courseId: parsed.data.courseId,
       },
     },
     select: { id: true },

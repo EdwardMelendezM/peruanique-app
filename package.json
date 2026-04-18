@@ -13,7 +13,9 @@
     "typecheck": "tsc --noEmit",
     "seed:groups": "bun run prisma/group-seed.ts",
     "seed:main": "bun run prisma/main-seed.ts",
-    "seed": "bun run prisma/group-seed.ts && bun run prisma/main-seed.ts"
+    "seed:improved": "bun run prisma/improved-seed.ts",
+    "seed": "bun run prisma/group-seed.ts && bun run prisma/main-seed.ts",
+    "validate:migration": "node scripts/validate-migration.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

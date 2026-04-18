@@ -50,7 +50,7 @@ export function RoadmapNodeModal({
   const [state, formAction, isPending] = useActionState(action, initialState)
 
   const [selectedLesson, setSelectedLesson] = useState(node?.lessonId ?? "")
-  const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
+  
   useEffect(() => {
     if (!state.success) {
       return
@@ -64,27 +64,10 @@ export function RoadmapNodeModal({
   const fieldErrors = state.fieldErrors ?? {}
   const isEdit = Boolean(node)
 
-  // Obtener cursos únicos y ordenados
-  const uniqueCourses = Array.from(
-    new Map(
-      lessons.map((lesson) => [lesson.courseName, lesson.courseName])
-    ).values()
-  ).sort()
-
-  const courseOptions = [
-    { value: "", label: "Todos los cursos" },
-    ...uniqueCourses.map((course) => ({
-      value: course,
-      label: course,
-    })),
-  ]
-
-  // Filtrar lecciones por curso seleccionado y ya seleccionadas
+  // Filtrar lecciones ya seleccionadas
   const filteredLessons = lessons.filter((lesson) => {
     const isAlreadySelected = lessonsAlreadySelected.has(lesson.id)
-    const matchesCourse =
-      !selectedCourse || lesson.courseName === selectedCourse
-    return !isAlreadySelected && matchesCourse
+    return !isAlreadySelected
   })
 
   const lessonOptions = filteredLessons.map((lesson) => ({
@@ -109,26 +92,6 @@ export function RoadmapNodeModal({
           {node ? <input type="hidden" name="nodeId" value={node.id} /> : null}
 
           <div className="space-y-2">
-            <Label htmlFor="courseFilter">Filtrar por curso</Label>
-            <input
-              type="hidden"
-              name="courseFilter"
-              value={selectedCourse ?? ""}
-            />
-            <SearchableSelect
-              items={courseOptions}
-              onSelect={(value) => {
-                setSelectedCourse(value === "" ? null : value)
-                setSelectedLesson("")
-              }}
-              selectedValue={selectedCourse ?? ""}
-              placeholder="Selecciona un curso (opcional)"
-              searchPlaceholder="Buscar cursos..."
-              emptyMessage="No se encontraron cursos"
-            />
-          </div>
-
-          <div className="space-y-2">
             <Label
               htmlFor="lessonId"
               className={cn(fieldErrors.lessonId && "text-destructive")}
@@ -147,11 +110,7 @@ export function RoadmapNodeModal({
               selectedValue={selectedLesson}
               placeholder="Selecciona una lección"
               searchPlaceholder="Buscar lecciones..."
-              emptyMessage={
-                selectedCourse
-                  ? `No hay lecciones en ${selectedCourse}`
-                  : "No se encontraron lecciones"
-              }
+              emptyMessage="No se encontraron lecciones disponibles"
             />
 
             {fieldErrors.lessonId ? (

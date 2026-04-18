@@ -16,7 +16,7 @@ export type CourseListItem = {
   name: string;
   colorTheme: string | null;
   iconUrl: string | null;
-  lessonsCount: number;
+  questionsCount: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -57,7 +57,7 @@ export async function getCourses(): Promise<CourseListItem[]> {
     orderBy: { name: "asc" },
     include: {
       _count: {
-        select: { lessons: true },
+        select: { questions: true },
       },
     },
   });
@@ -67,7 +67,7 @@ export async function getCourses(): Promise<CourseListItem[]> {
     name: course.name,
     colorTheme: course.colorTheme,
     iconUrl: course.iconUrl,
-    lessonsCount: course._count.lessons,
+    questionsCount: course._count.questions,
     createdAt: course.createdAt,
     updatedAt: course.updatedAt,
   }));
@@ -83,7 +83,7 @@ export async function getCourseById(courseId: string): Promise<{ success: true; 
     where: { id: parsed.data.id },
     include: {
       _count: {
-        select: { lessons: true },
+        select: { questions: true },
       },
     },
   });
@@ -99,7 +99,7 @@ export async function getCourseById(courseId: string): Promise<{ success: true; 
       name: course.name,
       colorTheme: course.colorTheme,
       iconUrl: course.iconUrl,
-      lessonsCount: course._count.lessons,
+      questionsCount: course._count.questions,
       createdAt: course.createdAt,
       updatedAt: course.updatedAt,
     },
@@ -221,11 +221,6 @@ export async function deleteCourse(courseId: string): Promise<CourseActionState>
 
   const existingCourse = await prisma.course.findUnique({
     where: { id: parsed.data.id },
-    include: {
-      _count: {
-        select: { lessons: true },
-      },
-    },
   });
 
   if (!existingCourse) {
@@ -243,10 +238,7 @@ export async function deleteCourse(courseId: string): Promise<CourseActionState>
 
   return {
     success: true,
-    message:
-      existingCourse._count.lessons > 0
-        ? `Curso eliminado junto con ${existingCourse._count.lessons} lección(es)`
-        : "Curso eliminado correctamente",
+    message: "Curso eliminado correctamente",
   };
 }
 

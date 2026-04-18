@@ -122,7 +122,8 @@ model Course {
   colorTheme String? // Para UI personalizada por curso
   iconUrl    String?
 
-  lessons Lesson[]
+  // ✅ NUEVO: Relación directa con preguntas
+  questions Question[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -131,15 +132,15 @@ model Course {
 }
 
 model Lesson {
-  id       String @id @default(uuid())
-  courseId String
-  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  title       String // Ej: "Distribuciones Numéricas"
+  id          String @id @default(uuid())
+  title       String // Ej: "Review Matemática", "Practice Integrales"
   description String? @db.Text
 
-  // Relaciones
-  questions    Question[]
+  // ✅ NUEVO: Tipo de lección para clasificar
+  lessonType  String @default("GENERIC") // GENERIC, REVIEW, PRACTICE, MIXED
+
+  // ✅ NUEVO: Relación many-to-many con preguntas
+  questions    LessonQuestion[]
   roadmapNodes RoadmapNode[] // Una lección puede estar en varios roadmaps
 
   createdAt DateTime @default(now())
@@ -148,10 +149,35 @@ model Lesson {
   @@map("lessons")
 }
 
+// ✅ NUEVA: Tabla intermedia para many-to-many
+model LessonQuestion {
+  id          String @id @default(uuid())
+
+  lessonId    String
+  lesson      Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  // Orden dentro de la lección
+  orderIndex  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Evita agregar la misma pregunta dos veces a una lección
+  @@unique([lessonId, questionId])
+  @@index([lessonId])
+  @@index([questionId])
+  @@map("lesson_questions")
+}
+
 model Question {
   id       String @id @default(uuid())
-  lessonId String
-  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  // ✅ NUEVO: Relación directa con Course (antes estaba en Lesson)
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   questionText    String       @db.Text
   explanationText String?      @db.Text
@@ -159,13 +185,15 @@ model Question {
   type            QuestionType @default(MULTIPLE_CHOICE)
   from            String? // Ej: "UNSAAC ORD 2023-I"
 
+  // ✅ NUEVO: Relación many-to-many con lecciones
+  lessons  LessonQuestion[]
   answers  Answer[]
   attempts LessonAttempt[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([lessonId])
+  @@index([courseId])
   @@map("questions")
 }
 

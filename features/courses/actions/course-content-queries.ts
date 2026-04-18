@@ -10,7 +10,6 @@ export type CourseAnswerItem = {
 
 export type CourseQuestionItem = {
   id: string;
-  lessonId: string;
   questionText: string;
   explanationText: string | null;
   from: string | null;
@@ -19,23 +18,44 @@ export type CourseQuestionItem = {
   answers: CourseAnswerItem[];
 };
 
-export type CourseLessonWithQuestions = {
-  id: string;
-  title: string;
-  questions: CourseQuestionItem[];
-};
-
 export type CourseQuestionTree = {
   course: {
     id: string;
     name: string;
   };
-  lessons: CourseLessonWithQuestions[];
+  questions: CourseQuestionItem[];
 };
+
+export type CourseItem = {
+  id: string;
+  name: string;
+};
+
+export async function getAllCourses(): Promise<
+  { success: true; courses: CourseItem[] } | { success: false, error: string }
+> {
+  const session = await getSession();
+  if (!session.success) {
+    return { success: false, error: "No autorizado" };
+  }
+
+  const courses = await prisma.course.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+    orderBy: { name: "asc" },
+  });
+
+  return {
+    success: true,
+    courses,
+  };
+}
 
 export async function getCourseQuestionTree(
   courseId: string
-): Promise<{ success: true; data: CourseQuestionTree } | { success: false; error: string }> {
+): Promise<{ success: true; data: CourseQuestionTree } | { success: false, error: string }> {
   const session = await getSession();
   if (!session.success) {
     return { success: false, error: "No autorizado" };
@@ -47,34 +67,27 @@ export async function getCourseQuestionTree(
     return { success: false, error: "Curso inválido" };
   }
 
+  // Obtener curso con sus preguntas directamente (no a través de lecciones)
   const course = await prisma.course.findUnique({
     where: { id: parsed.data.id },
     select: {
       id: true,
       name: true,
-      lessons: {
-        orderBy: { title: "asc" },
+      questions: {
+        orderBy: { createdAt: "desc" },
         select: {
           id: true,
-          title: true,
-          questions: {
-            orderBy: { updatedAt: "desc" },
+          questionText: true,
+          explanationText: true,
+          from: true,
+          difficulty: true,
+          type: true,
+          answers: {
+            orderBy: [{ isCorrect: "desc" }, { id: "asc" }],
             select: {
               id: true,
-              lessonId: true,
-              questionText: true,
-              explanationText: true,
-              from: true,
-              difficulty: true,
-              type: true,
-              answers: {
-                orderBy: [{ isCorrect: "desc" }, { id: "asc" }],
-                select: {
-                  id: true,
-                  answerText: true,
-                  isCorrect: true,
-                },
-              },
+              answerText: true,
+              isCorrect: true,
             },
           },
         },
@@ -93,25 +106,19 @@ export async function getCourseQuestionTree(
         id: course.id,
         name: course.name,
       },
-      lessons: course.lessons.map((lesson) => ({
-        id: lesson.id,
-        title: lesson.title,
-        questions: lesson.questions.map((question) => ({
-          id: question.id,
-          lessonId: question.lessonId,
-          questionText: question.questionText,
-          explanationText: question.explanationText,
-          from: question.from,
-          difficulty: question.difficulty,
-          type: question.type,
-          answers: question.answers.map((answer) => ({
-            id: answer.id,
-            answerText: answer.answerText,
-            isCorrect: answer.isCorrect,
-          })),
+      questions: course.questions.map((question) => ({
+        id: question.id,
+        questionText: question.questionText,
+        explanationText: question.explanationText,
+        from: question.from,
+        difficulty: question.difficulty,
+        type: question.type,
+        answers: question.answers.map((answer) => ({
+          id: answer.id,
+          answerText: answer.answerText,
+          isCorrect: answer.isCorrect,
         })),
       })),
     },
   };
 }
-

@@ -6,15 +6,15 @@ import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "@/components/shared/confirm-modal";
-import { deleteCourse } from "../actions/course-actions";
+import { deleteLesson } from "../actions/lesson-actions";
 
-interface CourseDeleteButtonProps {
-  courseId: string;
-  courseName: string;
+interface LessonDeleteButtonProps {
+  lessonId: string;
+  lessonTitle: string;
   questionsCount: number;
 }
 
-export function CourseDeleteButton({ courseId, courseName, questionsCount }: CourseDeleteButtonProps) {
+export function LessonDeleteButton({ lessonId, lessonTitle, questionsCount }: LessonDeleteButtonProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -22,15 +22,15 @@ export function CourseDeleteButton({ courseId, courseName, questionsCount }: Cou
   const handleConfirm = () => {
     const run = async () => {
       setIsPending(true);
-      const result = await deleteCourse(courseId);
+      const result = await deleteLesson(lessonId);
 
       if (!result.success) {
-        toast.error(result.error ?? "No se pudo eliminar el curso");
+        toast.error(result.error ?? "No se pudo eliminar la lección");
         setIsPending(false);
         return;
       }
 
-      toast.success(result.message ?? "Curso eliminado correctamente");
+      toast.success(result.message ?? "Lección eliminada correctamente");
       setIsOpen(false);
       setIsPending(false);
       router.refresh();
@@ -51,10 +51,10 @@ export function CourseDeleteButton({ courseId, courseName, questionsCount }: Cou
         onOpenChange={setIsOpen}
         onConfirm={handleConfirm}
         loading={isPending}
-        title={`Eliminar ${courseName}`}
+        title={`Eliminar ${lessonTitle}`}
         description={
           <span>
-            Esta acción eliminará el curso de forma permanente.
+            Esta acción eliminará la lección de forma permanente.
             {questionsCount > 0 ? (
               <>
                 <br />

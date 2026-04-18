@@ -33,24 +33,44 @@ export async function GET(
       return jsonError("UNAUTHORIZED", "User not found", 401);
     }
 
-    // Get lesson with course information
+    // Get lesson with questions via many-to-many relation
     const lesson = await prisma.lesson.findUnique({
       where: { id: lessonId },
       select: {
         id: true,
         title: true,
         description: true,
-        courseId: true,
-        course: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
+        lessonType: true,
         questions: {
           select: {
             id: true,
+            questionId: true,
+            orderIndex: true,
+            question: {
+              select: {
+                id: true,
+                questionText: true,
+                difficulty: true,
+                type: true,
+                explanationText: true,
+                from: true,
+                course: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                answers: {
+                  select: {
+                    id: true,
+                    answerText: true,
+                    isCorrect: true,
+                  },
+                },
+              },
+            },
           },
+          orderBy: { orderIndex: "asc" },
         },
       },
     });
@@ -96,14 +116,34 @@ export async function GET(
       };
     }
 
-    return jsonSuccess(
+    // Get course info from first question if available
+    const firstQuestion = lesson.questions.at(0);
+    const courseId = firstQuestion ? firstQuestion.question.course.id : null;
+    const courseName = firstQuestion ? firstQuestion.question.course.name : null;
+
+     return jsonSuccess(
       {
         id: lesson.id,
         title: lesson.title,
         description: lesson.description,
-        courseId: lesson.course.id,
-        courseName: lesson.course.name,
+        type: lesson.lessonType,
+        courseId,
+        courseName,
         questionsCount: lesson.questions.length,
+        questions: lesson.questions.map((lq) => ({
+          id: lq.question.id,
+          text: lq.question.questionText,
+          difficulty: lq.question.difficulty,
+          type: lq.question.type,
+          explanation: lq.question.explanationText,
+          from: lq.question.from,
+          orderIndex: lq.orderIndex,
+          answers: lq.question.answers.map((answer) => ({
+            optionId: answer.id,
+            text: answer.answerText,
+            isCorrect: answer.isCorrect,
+          })),
+        })),
         userProgress,
       },
       200

@@ -70,18 +70,31 @@ export async function POST(
       return jsonError("NOT_FOUND", "Lesson not found", 404);
     }
 
-    // Verify question exists and belongs to this lesson
+    // Verify question exists and belongs to this lesson (through LessonQuestion)
     const question = await prisma.question.findUnique({
       where: { id: questionId },
       select: {
         id: true,
-        lessonId: true,
         difficulty: true,
         explanationText: true,
       },
     });
 
-    if (!question || question.lessonId !== lessonId) {
+    if (!question) {
+      return jsonError("NOT_FOUND", "Question not found", 404);
+    }
+
+    // Verify the question belongs to this lesson through LessonQuestion
+    const lessonQuestion = await prisma.lessonQuestion.findUnique({
+      where: {
+        lessonId_questionId: {
+          lessonId,
+          questionId,
+        },
+      },
+    });
+
+    if (!lessonQuestion) {
       return jsonError("NOT_FOUND", "Question not found in this lesson", 404);
     }
 
@@ -133,10 +146,10 @@ export async function POST(
         select: { scoreObtained: true, starsEarned: true },
       });
 
-      // Count total questions in this lesson
-      const totalQuestions = await prisma.question.count({
-        where: { lessonId },
-      });
+       // Count total questions in this lesson through LessonQuestion relation
+       const totalQuestions = await prisma.lessonQuestion.count({
+         where: { lessonId },
+       });
 
       // Count distinct questions that have at least one correct answer
       // This handles multiple attempts on the same question

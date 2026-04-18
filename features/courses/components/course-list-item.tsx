@@ -26,7 +26,7 @@ export function CourseListItemCard({ course }: CourseListItemProps) {
       title={course.name}
       metadata={
         <>
-          <span>{course.lessonsCount} lección(es)</span>
+          <span>{course.questionsCount} pregunta(s)</span>
           <span>Actualizado {formatDate(course.updatedAt)}</span>
           {course.colorTheme ? <span>Tema: {course.colorTheme}</span> : null}
         </>
@@ -34,12 +34,6 @@ export function CourseListItemCard({ course }: CourseListItemProps) {
       actions={<Badge variant="outline">ID {course.id.slice(0, 8)}</Badge>}
       footerActions={
         <>
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/admin/courses/${course.id}/lessons`}>
-              <NotebookTabs className="mr-2 h-4 w-4" />
-              Lecciones
-            </Link>
-          </Button>
           <Button asChild variant="outline" size="sm">
             <Link href={`/admin/courses/${course.id}/questions`}>
               <MessageSquare className="mr-2 h-4 w-4" />
@@ -55,7 +49,7 @@ export function CourseListItemCard({ course }: CourseListItemProps) {
           <CourseDeleteButton
             courseId={course.id}
             courseName={course.name}
-            lessonsCount={course.lessonsCount}
+            questionsCount={course.questionsCount}
           />
         </>
       }

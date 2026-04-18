@@ -19,11 +19,27 @@ const calculateXpDelta = (difficulty: Difficulty, isCorrect: boolean): number =>
 /**
  * Obtiene la siguiente pregunta sin responder para una lección específica.
  * Prioriza preguntas no intentadas, luego preguntas incorrectas.
+ * Ahora busca preguntas a través de la relación many-to-many LessonQuestion.
  */
 const getNextQuestion = async (lessonId: string, userId: string) => {
-  // Primero, obtén todas las preguntas de la lección
-  const allQuestions = await prisma.question.findMany({
+  // Obtén todas las preguntas de la lección a través de LessonQuestion
+  const lessonQuestions = await prisma.lessonQuestion.findMany({
     where: { lessonId },
+    select: {
+      questionId: true,
+      orderIndex: true,
+    },
+    orderBy: { orderIndex: "asc" },
+  });
+
+  if (lessonQuestions.length === 0) {
+    return null;
+  }
+
+  // Obtén los detalles de las preguntas
+  const questionIds = lessonQuestions.map((lq) => lq.questionId);
+  const allQuestions = await prisma.question.findMany({
+    where: { id: { in: questionIds } },
     select: {
       id: true,
       questionText: true,
@@ -37,18 +53,19 @@ const getNextQuestion = async (lessonId: string, userId: string) => {
         },
       },
     },
-    orderBy: { createdAt: "asc" },
   });
 
-  if (allQuestions.length === 0) {
-    return null;
-  }
+  // Mantén el orden de la lección
+  const questionMap = new Map(allQuestions.map((q) => [q.id, q]));
+  const orderedQuestions = questionIds
+    .map((id) => questionMap.get(id))
+    .filter((q): q is NonNullable<typeof q> => q !== undefined);
 
   // Obtén los intentos del usuario para esta lección
   const userAttempts = await prisma.lessonAttempt.findMany({
     where: {
       userId,
-      question: { lessonId },
+      questionId: { in: questionIds },
     },
     select: {
       questionId: true,
@@ -59,14 +76,14 @@ const getNextQuestion = async (lessonId: string, userId: string) => {
   const attemptMap = new Map(userAttempts.map((a) => [a.questionId, a.isCorrect]));
 
   // Prioridad 1: Pregunta sin intentar
-  for (const question of allQuestions) {
+  for (const question of orderedQuestions) {
     if (!attemptMap.has(question.id)) {
       return question;
     }
   }
 
   // Prioridad 2: Pregunta respondida incorrectamente
-  for (const question of allQuestions) {
+  for (const question of orderedQuestions) {
     if (attemptMap.has(question.id) && !attemptMap.get(question.id)) {
       return question;
     }
@@ -103,12 +120,25 @@ const findRoadmapNode = async (lessonId: string, userId: string) => {
 
 /**
  * Cuenta el número de preguntas respondidas correctamente en una lección.
+ * Ahora busca a través de LessonQuestion.
  */
 const countCompletedQuestions = async (lessonId: string, userId: string): Promise<number> => {
+  // Obtén los IDs de preguntas en esta lección
+  const lessonQuestions = await prisma.lessonQuestion.findMany({
+    where: { lessonId },
+    select: { questionId: true },
+  });
+
+  const questionIds = lessonQuestions.map((lq) => lq.questionId);
+
+  if (questionIds.length === 0) {
+    return 0;
+  }
+
   return prisma.lessonAttempt.count({
     where: {
       userId,
-      question: { lessonId },
+      questionId: { in: questionIds },
       isCorrect: true,
     },
   });
@@ -116,9 +146,10 @@ const countCompletedQuestions = async (lessonId: string, userId: string): Promis
 
 /**
  * Obtiene el total de preguntas en una lección.
+ * Ahora cuenta a través de LessonQuestion.
  */
 const getTotalQuestions = async (lessonId: string): Promise<number> => {
-  return prisma.question.count({
+  return prisma.lessonQuestion.count({
     where: { lessonId },
   });
 };

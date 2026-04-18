@@ -40,7 +40,7 @@ async function seedFile(filePath: string, prisma: PrismaClient) {
 
   console.log(`[SEED] Insertando nuevo curso: ${data.course.name}...`);
 
-  // Creamos el árbol de contenido de forma secuencial para evitar cortes de conexión en poolers.
+  // 1. Crear curso
   const createdCourse = await prisma.course.create({
     data: {
       name: data.course.name,
@@ -48,17 +48,37 @@ async function seedFile(filePath: string, prisma: PrismaClient) {
       iconUrl: data.course.iconUrl,
     },
   });
+  console.log(`  ✅ Curso creado: ${createdCourse.id}`);
+
+  // 2. Crear lecciones independientes (sin courseId)
+  const lessonMap = new Map<string, string>();
 
   for (const lesson of data.lessons) {
     const createdLesson = await prisma.lesson.create({
       data: {
         title: lesson.title,
         description: lesson.description,
-        courseId: createdCourse.id,
+        lessonType: "GENERIC", // Tipo por defecto
       },
     });
+    lessonMap.set(lesson.title, createdLesson.id);
+    console.log(`  ✅ Lección creada: ${lesson.title} (${createdLesson.id})`);
+  }
+
+  // 3. Crear preguntas Y respuestas, luego relacionarlas con lecciones
+  let questionIndexInLesson = 0;
+
+  for (const lesson of data.lessons) {
+    const lessonId = lessonMap.get(lesson.title);
+    if (!lessonId) {
+      console.error(`  ❌ No se encontró lección: ${lesson.title}`);
+      continue;
+    }
+
+    questionIndexInLesson = 0;
 
     for (const question of lesson.questions) {
+      // Crear pregunta con courseId directo
       const createdQuestion = await prisma.question.create({
         data: {
           questionText: question.questionText,
@@ -66,10 +86,11 @@ async function seedFile(filePath: string, prisma: PrismaClient) {
           difficulty: question.difficulty,
           type: question.type,
           from: question.from,
-          lessonId: createdLesson.id,
+          courseId: createdCourse.id, // ✅ Directo del curso, no de lección
         },
       });
 
+      // Crear respuestas
       for (const answer of question.answers) {
         await prisma.answer.create({
           data: {
@@ -79,9 +100,24 @@ async function seedFile(filePath: string, prisma: PrismaClient) {
           },
         });
       }
+
+      // Crear relación many-to-many entre lección y pregunta
+      await prisma.lessonQuestion.create({
+        data: {
+          lessonId: lessonId,
+          questionId: createdQuestion.id,
+          orderIndex: questionIndexInLesson,
+        },
+      });
+
+      questionIndexInLesson++;
+      console.log(
+        `    ✅ Pregunta creada y agregada a lección: ${createdQuestion.id}`
+      );
     }
   }
-  console.log(`[SUCCESS] Curso "${data.course.name}" creado con éxito.`);
+
+  console.log(`[SUCCESS] Curso "${data.course.name}" creado con éxito.\n`);
 }
 
 export async function seedAllJsonFiles() {

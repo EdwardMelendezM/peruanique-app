@@ -7,7 +7,6 @@ export type RoadmapNodeListItem = {
   lessonId: string;
   orderIndex: number;
   lessonTitle: string;
-  lessonCourseName: string;
   progressCount: number;
   attemptsCount: number;
   updatedAt: Date;
@@ -21,7 +20,6 @@ export type RoadmapGroupOption = {
 export type RoadmapLessonOption = {
   id: string;
   title: string;
-  courseName: string;
 };
 
 export type RoadmapNodesData = {
@@ -32,10 +30,9 @@ export type RoadmapNodesData = {
   nodes: RoadmapNodeListItem[];
 };
 
-const toLessonOption = (lesson: { id: string; title: string; course: { name: string } }): RoadmapLessonOption => ({
+const toLessonOption = (lesson: { id: string; title: string }): RoadmapLessonOption => ({
   id: lesson.id,
   title: lesson.title,
-  courseName: lesson.course.name,
 });
 
 export async function getRoadmapNodesData(
@@ -55,15 +52,10 @@ export async function getRoadmapNodesData(
       },
     }),
     prisma.lesson.findMany({
-      orderBy: [{ course: { name: "asc" } }, { title: "asc" }],
+      orderBy: { title: "asc" },
       select: {
         id: true,
         title: true,
-        course: {
-          select: {
-            name: true,
-          },
-        },
       },
     }),
   ]);
@@ -111,11 +103,6 @@ export async function getRoadmapNodesData(
       lesson: {
         select: {
           title: true,
-          course: {
-            select: {
-              name: true,
-            },
-          },
         },
       },
       _count: {
@@ -140,7 +127,6 @@ export async function getRoadmapNodesData(
         lessonId: node.lessonId,
         orderIndex: node.orderIndex,
         lessonTitle: node.lesson.title,
-        lessonCourseName: node.lesson.course.name,
         progressCount: node._count.userProgress,
         attemptsCount: node._count.attempts,
         updatedAt: node.updatedAt,
