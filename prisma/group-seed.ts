@@ -58,10 +58,12 @@ export async function seedGroups(client?: PrismaClient) {
         update: {
           name: group.name,
           description: group.description,
+          code: group.code,
         },
         create: {
           id: group.id,
           name: group.name,
+          code: group.code,
           description: group.description,
         },
       });
