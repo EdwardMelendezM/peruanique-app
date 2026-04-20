@@ -55,17 +55,49 @@ export async function GET(
       );
     }
 
+    // Count total questions in this lesson
+    const totalQuestions = await prisma.lessonQuestion.count({
+      where: { lessonId },
+    });
+
+    // Get all question IDs in this lesson
+    const lessonQuestions = await prisma.lessonQuestion.findMany({
+      where: { lessonId },
+      select: { questionId: true },
+    });
+
+    const questionIds = lessonQuestions.map((lq) => lq.questionId);
+
+    // Count distinct questions answered correctly by the user
+    const correctAttempts = await prisma.lessonAttempt.findMany({
+      where: {
+        userId: user.id,
+        questionId: {
+          in: questionIds,
+        },
+        isCorrect: true,
+      },
+      select: { questionId: true },
+      distinct: ["questionId"],
+    });
+
+    const answeredCorrectly = correctAttempts.length;
+    const pendingQuestions = totalQuestions - answeredCorrectly;
+
     // Format response
     return jsonSuccess(
       {
         questionId: nextQuestion.id,
         prompt: nextQuestion.questionText,
         difficulty: nextQuestion.difficulty,
-        options: nextQuestion.answers.map((answer) => ({
+        options: nextQuestion.answers.map((answer ) => ({
           optionId: answer.id,
           text: answer.answerText,
         })),
         from: nextQuestion.from,
+        totalQuestions,
+        answeredCorrectly,
+        pendingQuestions,
       },
       200
     );
