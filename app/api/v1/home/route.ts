@@ -75,6 +75,7 @@ export async function GET(request: NextRequest) {
         lesson: {
           select: {
             title: true,
+            lessonType: true,
           },
         },
       },
@@ -126,6 +127,7 @@ export async function GET(request: NextRequest) {
           id: node.id,
           lessonId: node.lessonId,
           lessonTitle: node.lesson.title,
+          lessonType: node.lesson.lessonType,
           status,
           orderIndex: node.orderIndex,
           progressPercent: progress ? Math.min((progress.scoreObtained / 100) * 100, 100) : 0,
@@ -177,6 +179,7 @@ export async function GET(request: NextRequest) {
         nextLesson: nextNode ? {
           id: nextNode.lessonId,
           title: nextNode.lessonTitle,
+          type: nextNode.lessonType,
           status: nextNode.status,
         } : null,
         recentActivity,

@@ -80,6 +80,7 @@ export async function GET(request: NextRequest) {
         lesson: {
           select: {
             title: true,
+            lessonType: true,
           },
         },
       },
@@ -102,14 +103,15 @@ export async function GET(request: NextRequest) {
           },
         });
 
-        return {
-          id: node.id,
-          lessonId: node.lessonId,
-          lessonTitle: node.lesson.title,
-          status: progress?.status || "LOCKED",
-          orderIndex: node.orderIndex,
-          progressPercent: progress ? Math.min((progress.scoreObtained / 100) * 100, 100) : 0,
-        };
+      return {
+        id: node.id,
+        lessonId: node.lessonId,
+        lessonTitle: node.lesson.title,
+        lessonType: node.lesson.lessonType,
+        status: progress?.status || "LOCKED",
+        orderIndex: node.orderIndex,
+        progressPercent: progress ? Math.min((progress.scoreObtained / 100) * 100, 100) : 0,
+      };
       })
     );
 
