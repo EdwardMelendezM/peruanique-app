@@ -1,5 +1,6 @@
 import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
 import {AppSidebar} from "@/components/app-sidebar";
+import { ModeToggle } from "@/components/mode-toggle"
 
 export default function DashboardLayout({
                                           children,
@@ -18,6 +19,7 @@ export default function DashboardLayout({
               <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:text-primary transition-colors"/>
               <div className="h-4 w-[1px] bg-border/60"/>
               <p className="text-sm font-medium text-muted-foreground">Panel de Control</p>
+              <ModeToggle />
             </div>
           </header>
 

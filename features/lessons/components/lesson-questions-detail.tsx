@@ -95,6 +95,8 @@ export function LessonQuestionsDetail({ lesson, courses, courseQuestionsMap = {}
           open={selectorOpen}
           onOpenChange={setSelectorOpen}
           courses={courses}
+          existingQuestionIds={lesson.questions.map((q) => q.questionId)}
+          courseQuestionsMap={courseQuestionsMap}
         />
       </div>
     );
@@ -198,8 +200,8 @@ export function LessonQuestionsDetail({ lesson, courses, courseQuestionsMap = {}
                         key={answer.id}
                         className={`flex items-start gap-2 p-2 rounded text-sm ${
                           answer.isCorrect
-                            ? "bg-green-50 border border-green-200"
-                            : "bg-gray-50 border border-gray-200"
+                            ? "bg-green-100 border border-green-200 dark:border-green-500 dark:bg-green-900/20"
+                            : "bg-gray-100 border border-gray-200 dark:border-gray-500 dark:bg-gray-900/20"
                         }`}
                       >
                         <span
