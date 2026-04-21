@@ -134,26 +134,12 @@ export async function POST(
     });
 
     // If correct answer, update UserProgress
-    if (selectedAnswer.isCorrect && roadmapNode) {
-      // Get or create UserProgress
-      const userProgress = await prisma.userProgress.findUnique({
-        where: {
-          userId_nodeId: {
-            userId: user.id,
-            nodeId: roadmapNode.id,
-          },
-        },
-        select: { scoreObtained: true, starsEarned: true },
+    if (roadmapNode) {
+      const totalQuestions = await prisma.lessonQuestion.count({
+        where: { lessonId },
       });
 
-       // Count total questions in this lesson through LessonQuestion relation
-       const totalQuestions = await prisma.lessonQuestion.count({
-         where: { lessonId },
-       });
-
-      // Count distinct questions that have at least one correct answer
-      // This handles multiple attempts on the same question
-      const distinctQuestionsAnswered = await prisma.lessonAttempt.groupBy({
+      const distinctQuestionsCorrect = await prisma.lessonAttempt.groupBy({
         by: ['questionId'],
         where: {
           userId: user.id,
@@ -162,42 +148,27 @@ export async function POST(
         },
       });
 
-      const correctAnswersCount = distinctQuestionsAnswered.length;
+      const isLessonCompleted = distinctQuestionsCorrect.length === totalQuestions;
 
-      // Determine if lesson is completed
-      // The attempt was already created above, so we check directly
-      const isLessonCompleted = correctAnswersCount === totalQuestions;
-
-      if (!userProgress) {
-        await prisma.userProgress.create({
-          data: {
-            userId: user.id,
-            nodeId: roadmapNode.id,
-            scoreObtained: xpDelta,
-            starsEarned: 1,
-            status: isLessonCompleted ? "COMPLETED" : "IN_PROGRESS",
-          },
-        });
-      } else {
-        // Update existing progress
-        await prisma.userProgress.update({
-          where: {
-            userId_nodeId: {
-              userId: user.id,
-              nodeId: roadmapNode.id,
-            },
-          },
-          data: {
-            scoreObtained: {
-              increment: xpDelta,
-            },
-            starsEarned: {
-              increment: 1,
-            },
-            status: isLessonCompleted ? "COMPLETED" : "IN_PROGRESS",
-          },
-        });
-      }
+      // Actualizar o Crear el progreso
+      await prisma.userProgress.upsert({
+        where: {
+          userId_nodeId: { userId: user.id, nodeId: roadmapNode.id },
+        },
+        update: {
+          scoreObtained: { increment: xpDelta },
+          // Solo incrementamos estrellas o lógica de gamificación si fue correcta
+          starsEarned: selectedAnswer.isCorrect ? { increment: 1 } : undefined,
+          status: isLessonCompleted ? "COMPLETED" : "IN_PROGRESS",
+        },
+        create: {
+          userId: user.id,
+          nodeId: roadmapNode.id,
+          scoreObtained: xpDelta,
+          starsEarned: selectedAnswer.isCorrect ? 1 : 0,
+          status: isLessonCompleted ? "COMPLETED" : "IN_PROGRESS",
+        },
+      });
     }
 
     // Update User totalXp
