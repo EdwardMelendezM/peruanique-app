@@ -2,8 +2,16 @@ import { NextRequest } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { jsonError, jsonSuccess } from "../../../_lib/mobile-auth";
+import {
+  jsonError,
+  jsonSuccess,
+} from "../../../_lib/mobile-auth"
 import { getNextQuestion } from "../../_lib/lesson-helpers";
+import { z } from "zod";
+
+const querySchema = z.object({
+  nodeId: z.string().uuid("Invalid Node ID"),
+});
 
 /**
  * GET /v1/lessons/:lessonId/question
@@ -25,6 +33,17 @@ export async function GET(
   try {
     const { lessonId } = await params;
 
+    const { searchParams } = new URL(request.url);
+    const result = querySchema.safeParse({
+      nodeId: searchParams.get("nodeId"),
+    });
+
+    if (!result.success) {
+      return jsonError("VALIDATION_ERROR", "nodeId is required and must be a UUID", 422);
+    }
+
+    const { nodeId } = result.data;
+
     // Get authenticated user
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -37,7 +56,12 @@ export async function GET(
 
     // Verify lesson exists
     const lessonExists = await prisma.lesson.findUnique({
-      where: { id: lessonId },
+      where: {
+        id: lessonId,
+        roadmapNodes: {
+
+        }
+      },
     });
 
     if (!lessonExists) {
@@ -86,6 +110,7 @@ export async function GET(
           in: questionIds,
         },
         isCorrect: true,
+        nodeId,
       },
       select: { questionId: true },
       distinct: ["questionId"],
