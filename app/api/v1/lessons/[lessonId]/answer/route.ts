@@ -149,16 +149,18 @@ export async function POST(
         where: { lessonId },
       });
 
-      // Check if all questions have been answered (correctness doesn't matter for completion)
-      const distinctQuestionsAnswered = await prisma.lessonAttempt.groupBy({
+      // Check if all questions have been answered CORRECTLY (for completion)
+      // Lección se marca COMPLETED solo si TODAS las preguntas están CORRECTAS
+      const distinctQuestionsCorrect = await prisma.lessonAttempt.groupBy({
         by: ['questionId'],
         where: {
           userId: user.id,
           nodeId: roadmapNode.id,
+          isCorrect: true, // ✅ IMPORTANTE: Solo preguntas respondidas CORRECTAMENTE
         },
       });
 
-      const isLessonCompleted = distinctQuestionsAnswered.length === totalQuestions;
+      const isLessonCompleted = distinctQuestionsCorrect.length === totalQuestions;
 
       // Actualizar o Crear el progreso
       await prisma.userProgress.upsert({
