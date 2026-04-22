@@ -107,7 +107,7 @@ const findRoadmapNode = async (lessonId: string, userId: string) => {
     return null;
   }
 
-  return await prisma.roadmapNode.findFirst({
+  return prisma.roadmapNode.findFirst({
     where: {
       lessonId,
       groupId: user.groupId,
@@ -115,7 +115,7 @@ const findRoadmapNode = async (lessonId: string, userId: string) => {
     select: {
       id: true,
     },
-  });
+  })
 };
 
 /**

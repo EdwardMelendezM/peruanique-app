@@ -71,14 +71,14 @@ export async function POST(
     }
 
     // ✅ SECURITY: Validate that lesson is unlocked for this user
-    const isUnlocked = await isLessonUnlocked(lessonId, user.id);
-    if (!isUnlocked) {
-      return jsonError(
-        "VALIDATION_ERROR",
-        "Lesson is not unlocked yet. Complete the previous lesson first.",
-        422
-      );
-    }
+    // const isUnlocked = await isLessonUnlocked(lessonId, user.id);
+    // if (!isUnlocked) {
+    //   return jsonError(
+    //     "VALIDATION_ERROR",
+    //     "Lesson is not unlocked yet. Complete the previous lesson first.",
+    //     422
+    //   );
+    // }
 
     // Verify question exists and belongs to this lesson (through LessonQuestion)
     const question = await prisma.question.findUnique({
