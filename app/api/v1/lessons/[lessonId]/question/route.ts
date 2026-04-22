@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { jsonError, jsonSuccess } from "../../../_lib/mobile-auth";
-import { getNextQuestion } from "../../_lib/lesson-helpers";
+import { getNextQuestion, isLessonUnlocked } from "../../_lib/lesson-helpers";
 
 /**
  * GET /v1/lessons/:lessonId/question
@@ -42,6 +42,16 @@ export async function GET(
 
     if (!lessonExists) {
       return jsonError("NOT_FOUND", "Lesson not found", 404);
+    }
+
+    // ✅ SECURITY: Validate that lesson is unlocked for this user
+    const isUnlocked = await isLessonUnlocked(lessonId, user.id);
+    if (!isUnlocked) {
+      return jsonError(
+        "VALIDATION_ERROR",
+        "Lesson is not unlocked yet. Complete the previous lesson first.",
+        422
+      );
     }
 
     // Get next question for this user

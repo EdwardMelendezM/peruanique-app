@@ -4,13 +4,14 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { getRequestJson, jsonError, jsonSuccess } from "../../../_lib/mobile-auth";
-import { calculateXpDelta, findRoadmapNode, isLessonUnlocked } from "../../_lib/lesson-helpers";
+import { findRoadmapNode, getProgressStatus } from "../../_lib/lesson-helpers";
 
 /**
- * Zod schema for POST /v1/lessons/:lessonId/answer
- * Validates questionId, selectedOptionId, and timeSpentSeconds
+ * Zod schema for POST /v1/lessons/:lessonId/retry
+ * Valida questionId, selectedOptionId, y timeSpentSeconds
+ * Mismo payload que el endpoint answer
  */
-const answerLessonSchema = z.object({
+const retryLessonSchema = z.object({
   questionId: z.string().uuid("Invalid question ID"),
   selectedOptionId: z.string().uuid("Invalid option ID"),
   timeSpentSeconds: z
@@ -20,12 +21,11 @@ const answerLessonSchema = z.object({
     .max(3600, "Time cannot exceed 1 hour"),
 });
 
-
 /**
- * POST /v1/lessons/:lessonId/answer
- * Registra la respuesta del usuario a una pregunta.
- * Calcula XP, actualiza UserProgress y genera RewardEvent.
- * Requiere autenticación.
+ * POST /v1/lessons/:lessonId/retry
+ * Permite al usuario responder preguntas de una lección completada para practicar.
+ * NO suma XP, NO actualiza UserProgress, solo registra LessonAttempt.
+ * Requiere autenticación y que la lección esté COMPLETED.
  */
 export async function POST(
   request: NextRequest,
@@ -43,7 +43,7 @@ export async function POST(
 
     // Get and validate request body
     const rawBody = await getRequestJson<unknown>(request);
-    const parsed = answerLessonSchema.safeParse(rawBody);
+    const parsed = retryLessonSchema.safeParse(rawBody);
 
     if (!parsed.success) {
       return jsonError("VALIDATION_ERROR", "Invalid answer data", 422);
@@ -54,7 +54,7 @@ export async function POST(
     // Get authenticated user
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true, totalXp: true, groupId: true },
+      select: { id: true, groupId: true },
     });
 
     if (!user) {
@@ -68,16 +68,6 @@ export async function POST(
 
     if (!lesson) {
       return jsonError("NOT_FOUND", "Lesson not found", 404);
-    }
-
-    // ✅ SECURITY: Validate that lesson is unlocked for this user
-    const isUnlocked = await isLessonUnlocked(lessonId, user.id);
-    if (!isUnlocked) {
-      return jsonError(
-        "VALIDATION_ERROR",
-        "Lesson is not unlocked yet. Complete the previous lesson first.",
-        422
-      );
     }
 
     // Verify question exists and belongs to this lesson (through LessonQuestion)
@@ -122,17 +112,29 @@ export async function POST(
       return jsonError("NOT_FOUND", "Answer option not found", 404);
     }
 
-    // Find RoadmapNode for this lesson (needed to track progress)
+    // Find RoadmapNode for this lesson
     const roadmapNode = await findRoadmapNode(lessonId, user.id);
 
-    // Calculate XP delta
-    const xpDelta = calculateXpDelta(question.difficulty, selectedAnswer.isCorrect);
+    if (!roadmapNode) {
+      return jsonError("NOT_FOUND", "Lesson not found in roadmap", 404);
+    }
 
-    // Create LessonAttempt
+    // ⚠️ CRITICAL: Verify that lesson is COMPLETED before allowing retry
+    const progressStatus = await getProgressStatus(roadmapNode.id, user.id);
+
+    if (progressStatus !== "COMPLETED") {
+      return jsonError(
+        "VALIDATION_ERROR",
+        "Lesson must be completed before retrying. Use /answer endpoint instead.",
+        422
+      );
+    }
+
+    // ✅ Create LessonAttempt - same as /answer
     const attempt = await prisma.lessonAttempt.create({
       data: {
         userId: user.id,
-        nodeId: roadmapNode?.id,
+        nodeId: roadmapNode.id,
         questionId,
         selectedAnswerId: selectedOptionId,
         isCorrect: selectedAnswer.isCorrect,
@@ -143,62 +145,9 @@ export async function POST(
       },
     });
 
-    // If correct answer, update UserProgress
-    if (roadmapNode) {
-      const totalQuestions = await prisma.lessonQuestion.count({
-        where: { lessonId },
-      });
-
-      // Check if all questions have been answered (correctness doesn't matter for completion)
-      const distinctQuestionsAnswered = await prisma.lessonAttempt.groupBy({
-        by: ['questionId'],
-        where: {
-          userId: user.id,
-          nodeId: roadmapNode.id,
-        },
-      });
-
-      const isLessonCompleted = distinctQuestionsAnswered.length === totalQuestions;
-
-      // Actualizar o Crear el progreso
-      await prisma.userProgress.upsert({
-        where: {
-          userId_nodeId: { userId: user.id, nodeId: roadmapNode.id },
-        },
-        update: {
-          scoreObtained: { increment: xpDelta },
-          // Solo incrementamos estrellas o lógica de gamificación si fue correcta
-          starsEarned: selectedAnswer.isCorrect ? { increment: 1 } : undefined,
-          status: isLessonCompleted ? "COMPLETED" : "IN_PROGRESS",
-        },
-        create: {
-          userId: user.id,
-          nodeId: roadmapNode.id,
-          scoreObtained: xpDelta,
-          starsEarned: selectedAnswer.isCorrect ? 1 : 0,
-          status: isLessonCompleted ? "COMPLETED" : "IN_PROGRESS",
-        },
-      });
-    }
-
-    // Update User totalXp
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        totalXp: {
-          increment: xpDelta,
-        },
-      },
-    });
-
-    // Create RewardEvent to track the reward
-    await prisma.rewardEvent.create({
-      data: {
-        userId: user.id,
-        type: "LESSON_COMPLETED",
-        pointsDelta: xpDelta,
-      },
-    });
+    // ❌ DO NOT update UserProgress
+    // ❌ DO NOT update User.totalXp
+    // ❌ DO NOT create RewardEvent
 
     // Get the correct answer to show to the user
     const correctAnswer = await prisma.answer.findFirst({
@@ -209,20 +158,22 @@ export async function POST(
       select: { id: true },
     });
 
+    // ✅ Return response with xpDelta = 0 and isRetry = true
     return jsonSuccess(
       {
         attemptId: attempt.id,
         isCorrect: selectedAnswer.isCorrect,
         correctOptionId: correctAnswer?.id,
-        xpDelta,
+        xpDelta: 0, // NO XP awarded in retry mode
+        isRetry: true, // Flag para que mobile sepa que es un reintento
         showInsight: !selectedAnswer.isCorrect,
         explanation: !selectedAnswer.isCorrect ? question.explanationText : undefined,
       },
       200
     );
   } catch (error) {
-    console.error("Error submitting answer:", error);
-    return jsonError("SERVER_ERROR", "Failed to submit answer", 500);
+    console.error("Error submitting retry answer:", error);
+    return jsonError("SERVER_ERROR", "Failed to submit retry answer", 500);
   }
 }
 
