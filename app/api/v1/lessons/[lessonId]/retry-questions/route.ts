@@ -28,10 +28,10 @@ export async function GET(
     // Get authenticated user
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true },
+      select: { id: true, groupId: true },
     });
 
-    if (!user) {
+    if (!user || !user?.groupId) {
       return jsonError("UNAUTHORIZED", "User not found", 401);
     }
 
@@ -46,7 +46,7 @@ export async function GET(
 
     // Find RoadmapNode for this lesson
     const roadmapNode = await prisma.roadmapNode.findFirst({
-      where: { lessonId },
+      where: { lessonId, groupId: user.groupId },
     });
 
     if (!roadmapNode) {

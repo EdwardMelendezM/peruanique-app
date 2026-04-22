@@ -22,74 +22,48 @@ const calculateXpDelta = (difficulty: Difficulty, isCorrect: boolean): number =>
  * Ahora busca preguntas a través de la relación many-to-many LessonQuestion.
  */
 const getNextQuestion = async (lessonId: string, userId: string) => {
-  // Obtén todas las preguntas de la lección a través de LessonQuestion
+  // 1. Obtener el contexto del nodo (vital para no mezclar progresos)
+  const roadmapNode = await findRoadmapNode(lessonId, userId);
+  if (!roadmapNode) return null;
+
   const lessonQuestions = await prisma.lessonQuestion.findMany({
     where: { lessonId },
-    select: {
-      questionId: true,
-      orderIndex: true,
-    },
     orderBy: { orderIndex: "asc" },
+    select: { questionId: true }
   });
 
-  if (lessonQuestions.length === 0) {
-    return null;
-  }
+  const questionIds = lessonQuestions.map(lq => lq.questionId);
 
-  // Obtén los detalles de las preguntas
-  const questionIds = lessonQuestions.map((lq) => lq.questionId);
-  const allQuestions = await prisma.question.findMany({
-    where: { id: { in: questionIds } },
-    select: {
-      id: true,
-      questionText: true,
-      difficulty: true,
-      type: true,
-      from: true,
-      answers: {
-        select: {
-          id: true,
-          answerText: true,
-        },
-      },
-    },
-  });
-
-  // Mantén el orden de la lección
-  const questionMap = new Map(allQuestions.map((q) => [q.id, q]));
-  const orderedQuestions = questionIds
-    .map((id) => questionMap.get(id))
-    .filter((q): q is NonNullable<typeof q> => q !== undefined);
-
-  // Obtén los intentos del usuario para esta lección
+  // 2. Obtener intentos filtrados por este NODO específico
   const userAttempts = await prisma.lessonAttempt.findMany({
     where: {
       userId,
+      nodeId: roadmapNode.id, // 👈 Filtro por nodo
       questionId: { in: questionIds },
     },
-    select: {
-      questionId: true,
-      isCorrect: true,
-    },
+    select: { questionId: true, isCorrect: true },
   });
 
-  const attemptMap = new Map(userAttempts.map((a) => [a.questionId, a.isCorrect]));
+  // 3. Crear un set de preguntas ya superadas (Correctas)
+  // Usamos un Set de IDs que SI fueron correctos alguna vez
+  const correctQuestionIds = new Set(
+    userAttempts.filter(a => a.isCorrect).map(a => a.questionId)
+  );
 
-  // Prioridad 1: Pregunta sin intentar
-  for (const question of orderedQuestions) {
-    if (!attemptMap.has(question.id)) {
-      return question;
-    }
-  }
+  // 4. Crear un set de preguntas intentadas (para saber cuáles fallaron)
+  const attemptedQuestionIds = new Set(userAttempts.map(a => a.questionId));
 
-  // Prioridad 2: Pregunta respondida incorrectamente
-  for (const question of orderedQuestions) {
-    if (attemptMap.has(question.id) && !attemptMap.get(question.id)) {
-      return question;
-    }
-  }
+  // Lógica de selección (KISS)
+  const allQuestions = await getAllLessonQuestions(lessonId);
 
-  // Si todas están respondidas correctamente, retorna null
+  // Prioridad 1: No intentada nunca en este nodo
+  const firstNeverAttempted = allQuestions.find(q => !attemptedQuestionIds.has(q.id));
+  if (firstNeverAttempted) return firstNeverAttempted;
+
+  // Prioridad 2: Intentada pero NUNCA acertada
+  const firstNeverCorrect = allQuestions.find(q => !correctQuestionIds.has(q.id));
+  if (firstNeverCorrect) return firstNeverCorrect;
+
   return null;
 };
 
