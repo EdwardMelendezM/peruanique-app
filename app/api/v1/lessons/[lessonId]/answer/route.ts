@@ -139,16 +139,16 @@ export async function POST(
         where: { lessonId },
       });
 
-      const distinctQuestionsCorrect = await prisma.lessonAttempt.groupBy({
+      // Check if all questions have been answered (correctness doesn't matter for completion)
+      const distinctQuestionsAnswered = await prisma.lessonAttempt.groupBy({
         by: ['questionId'],
         where: {
           userId: user.id,
           nodeId: roadmapNode.id,
-          isCorrect: true,
         },
       });
 
-      const isLessonCompleted = distinctQuestionsCorrect.length === totalQuestions;
+      const isLessonCompleted = distinctQuestionsAnswered.length === totalQuestions;
 
       // Actualizar o Crear el progreso
       await prisma.userProgress.upsert({
