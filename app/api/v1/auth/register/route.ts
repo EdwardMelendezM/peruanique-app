@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       email: true,
       full_name: true,
       name: true,
-      groupId: true,
+      group: true,
       isDisabled: true,
     },
   });
