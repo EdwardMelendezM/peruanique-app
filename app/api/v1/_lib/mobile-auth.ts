@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { auth } from "@/lib/auth";
 import { Group } from "@/app/generated/prisma/client"
-import { Prisma__UserClient } from "@/app/generated/prisma/models/User"
+import { prisma } from "@/lib/prisma"
 
 export const registerBodySchema = z.object({
   email: z.string().email(),
