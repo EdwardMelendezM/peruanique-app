@@ -1,17 +1,18 @@
-import { NextRequest } from "next/server";
+import { NextRequest } from "next/server"
 
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma"
+import { auth } from "@/lib/auth"
 import {
+  getCurrentMobileUser,
   jsonError,
   jsonSuccess,
 } from "../../../_lib/mobile-auth"
-import { getNextQuestion } from "../../_lib/lesson-helpers";
-import { z } from "zod";
+import { getNextQuestion } from "../../_lib/lesson-helpers"
+import { z } from "zod"
 
 const querySchema = z.object({
   nodeId: z.string().uuid("Invalid Node ID"),
-});
+})
 
 /**
  * GET /v1/lessons/:lessonId/question
@@ -24,48 +25,53 @@ export async function GET(
   { params }: { params: Promise<{ lessonId: string }> }
 ) {
   // Verify user is authenticated
-  const session = await auth.api.getSession({ headers: request.headers });
+  const session = await auth.api.getSession({ headers: request.headers })
 
   if (!session) {
-    return jsonError("UNAUTHORIZED", "Session not found", 401);
+    return jsonError("UNAUTHORIZED", "Session not found", 401)
   }
 
   try {
-    const { lessonId } = await params;
+    const { lessonId } = await params
 
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(request.url)
     const result = querySchema.safeParse({
       nodeId: searchParams.get("nodeId"),
-    });
+    })
 
     if (!result.success) {
-      return jsonError("VALIDATION_ERROR", "nodeId is required and must be a UUID", 422);
+      return jsonError(
+        "VALIDATION_ERROR",
+        "nodeId is required and must be a UUID",
+        422
+      )
     }
 
-    const { nodeId } = result.data;
+    const { nodeId } = result.data
 
-    // Get authenticated user
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true },
-    });
-
+    const user = await getCurrentMobileUser(session.user.email);
     if (!user) {
-      return jsonError("UNAUTHORIZED", "User not found", 401);
+      return jsonError("UNAUTHORIZED", "User not found", 401)
+    }
+
+    if (user.currentEnergy === 0) {
+      return jsonError(
+        "FORBIDDEN",
+        "Not enough energy to attempt a question. Please wait for it to refill.",
+        403
+      )
     }
 
     // Verify lesson exists
     const lessonExists = await prisma.lesson.findUnique({
       where: {
         id: lessonId,
-        roadmapNodes: {
-
-        }
+        roadmapNodes: {},
       },
-    });
+    })
 
     if (!lessonExists) {
-      return jsonError("NOT_FOUND", "Lesson not found", 404);
+      return jsonError("NOT_FOUND", "Lesson not found", 404)
     }
 
     // ✅ SECURITY: Validate that lesson is unlocked for this user
@@ -79,28 +85,28 @@ export async function GET(
     // }
 
     // Get next question for this user
-    const nextQuestion = await getNextQuestion(lessonId, user.id);
+    const nextQuestion = await getNextQuestion(lessonId, user.id)
 
     if (!nextQuestion) {
       return jsonError(
         "NOT_FOUND",
         "No questions available for this lesson",
         404
-      );
+      )
     }
 
     // Count total questions in this lesson
     const totalQuestions = await prisma.lessonQuestion.count({
       where: { lessonId },
-    });
+    })
 
     // Get all question IDs in this lesson
     const lessonQuestions = await prisma.lessonQuestion.findMany({
       where: { lessonId },
       select: { questionId: true },
-    });
+    })
 
-    const questionIds = lessonQuestions.map((lq) => lq.questionId);
+    const questionIds = lessonQuestions.map((lq) => lq.questionId)
 
     // Count distinct questions answered correctly by the user
     const correctAttempts = await prisma.lessonAttempt.findMany({
@@ -114,10 +120,10 @@ export async function GET(
       },
       select: { questionId: true },
       distinct: ["questionId"],
-    });
+    })
 
-    const answeredCorrectly = correctAttempts.length;
-    const pendingQuestions = totalQuestions - answeredCorrectly;
+    const answeredCorrectly = correctAttempts.length
+    const pendingQuestions = totalQuestions - answeredCorrectly
 
     // Format response
     return jsonSuccess(
@@ -125,7 +131,7 @@ export async function GET(
         questionId: nextQuestion.id,
         prompt: nextQuestion.questionText,
         difficulty: nextQuestion.difficulty,
-        options: nextQuestion.answers.map((answer ) => ({
+        options: nextQuestion.answers.map((answer) => ({
           optionId: answer.id,
           text: answer.answerText,
         })),
@@ -135,10 +141,9 @@ export async function GET(
         pendingQuestions,
       },
       200
-    );
+    )
   } catch (error) {
-    console.error("Error fetching question:", error);
-    return jsonError("SERVER_ERROR", "Failed to fetch question", 500);
+    console.error("Error fetching question:", error)
+    return jsonError("SERVER_ERROR", "Failed to fetch question", 500)
   }
 }
-

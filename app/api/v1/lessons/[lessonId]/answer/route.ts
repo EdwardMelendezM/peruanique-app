@@ -3,7 +3,12 @@ import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { getRequestJson, jsonError, jsonSuccess } from "../../../_lib/mobile-auth";
+import {
+  getCurrentMobileUser,
+  getRequestJson,
+  jsonError,
+  jsonSuccess,
+} from "../../../_lib/mobile-auth"
 import { calculateXpDelta, findRoadmapNode, isLessonUnlocked } from "../../_lib/lesson-helpers";
 
 /**
@@ -52,13 +57,16 @@ export async function POST(
     const { questionId, selectedOptionId, timeSpentSeconds } = parsed.data;
 
     // Get authenticated user
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, totalXp: true, groupId: true },
-    });
-
+    const user = await getCurrentMobileUser(session.user.email);
     if (!user) {
       return jsonError("UNAUTHORIZED", "User not found", 401);
+    }
+    if (user.currentEnergy === 0) {
+      return jsonError(
+        "FORBIDDEN",
+        "Not enough energy to attempt a question. Please wait for it to refill.",
+        403
+      )
     }
 
     // Verify lesson exists
@@ -69,16 +77,6 @@ export async function POST(
     if (!lesson) {
       return jsonError("NOT_FOUND", "Lesson not found", 404);
     }
-
-    // ✅ SECURITY: Validate that lesson is unlocked for this user
-    // const isUnlocked = await isLessonUnlocked(lessonId, user.id);
-    // if (!isUnlocked) {
-    //   return jsonError(
-    //     "VALIDATION_ERROR",
-    //     "Lesson is not unlocked yet. Complete the previous lesson first.",
-    //     422
-    //   );
-    // }
 
     // Verify question exists and belongs to this lesson (through LessonQuestion)
     const question = await prisma.question.findUnique({
@@ -161,6 +159,14 @@ export async function POST(
       });
 
       const isLessonCompleted = distinctQuestionsCorrect.length === totalQuestions;
+
+      // Actualizar currentEnergy si falla
+      if (!selectedAnswer.isCorrect) {
+        await prisma.user.update({
+          where: { id: user.id},
+          data: { currentEnergy: { decrement: 1 } },
+        })
+      }
 
       // Actualizar o Crear el progreso
       await prisma.userProgress.upsert({

@@ -156,3 +156,15 @@ export const sevenDaysFromNow = () => {
   return expiresAt;
 };
 
+export const getCurrentMobileUser = (email: string) => {
+  return prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      name: true,
+      currentEnergy: true,
+      lastEnergyRefill: true,
+      group: true,
+    }
+  })
+}
