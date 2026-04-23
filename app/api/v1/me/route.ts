@@ -21,7 +21,16 @@ export async function GET(request: NextRequest) {
   }
 
   // Ahora 'user' ya trae la propiedad energy calculada
-  return jsonSuccess(mapDbUserToMobile(user), 200);
+  return jsonSuccess({
+    id: user.id,
+    email: user.email,
+    username: user.name ?? "",
+    fullName: user.full_name,
+    group: user?.group ?? "",
+    birthDate: null as string | null,
+    isActive: !user.isDisabled,
+    energy: user.energy,
+  }, 200);
 }
 
 export async function PATCH(request: NextRequest) {
@@ -50,7 +59,7 @@ export async function PATCH(request: NextRequest) {
       email: true,
       full_name: true,
       name: true,
-      groupId: true,
+      group: true,
       isDisabled: true,
     },
   });
@@ -58,7 +67,15 @@ export async function PATCH(request: NextRequest) {
   return jsonSuccess(
     {
       updated: true,
-      user: mapDbUserToMobile(updatedUser),
+      user: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        updatedUsername: updatedUser.name ?? "",
+        fullName: updatedUser.full_name,
+        group: updatedUser?.group ?? "",
+        birthDate: null as string | null,
+        isActive: !updatedUser.isDisabled,
+      }
     },
     200
   );
