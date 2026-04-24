@@ -12,7 +12,6 @@ import {
 import {
   calculateXpDelta,
   findRoadmapNode,
-  isLessonUnlocked,
   updateStreak,
 } from "../../_lib/lesson-helpers"
 
