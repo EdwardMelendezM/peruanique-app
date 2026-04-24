@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
     birthDate: null as string | null,
     isActive: !user.isDisabled,
     energy: user.energy,
+    streak: user.streak,
   }, 200);
 }
 
