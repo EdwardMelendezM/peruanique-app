@@ -52,12 +52,13 @@ model User {
   group   Group?  @relation(fields: [groupId], references: [id])
 
   // Gamification (Estilo Duolingo)
-  totalXp          Int      @default(0)
-  streakDays       Int      @default(0)
-  currentEnergy    Int      @default(5)
-  maxEnergy        Int      @default(5)
-  dailyGoalMinutes Int      @default(15)
-  lastEnergyRefill DateTime @default(now())
+  totalXp          Int       @default(0)
+  streakDays       Int       @default(0)
+  lastActivityAt   DateTime?
+  currentEnergy    Int       @default(5)
+  maxEnergy        Int       @default(5)
+  dailyGoalMinutes Int       @default(15)
+  lastEnergyRefill DateTime  @default(now())
 
   // Relations
   profile        UserProfile?
@@ -132,12 +133,12 @@ model Course {
 }
 
 model Lesson {
-  id          String @id @default(uuid())
+  id          String  @id @default(uuid())
   title       String // Ej: "Review Matemática", "Practice Integrales"
   description String? @db.Text
 
   // ✅ NUEVO: Tipo de lección para clasificar
-  lessonType  String @default("GENERIC") // GENERIC, REVIEW, PRACTICE, MIXED
+  lessonType String @default("GENERIC") // GENERIC, REVIEW, PRACTICE, MIXED
 
   // ✅ NUEVO: Relación many-to-many con preguntas
   questions    LessonQuestion[]
@@ -151,16 +152,16 @@ model Lesson {
 
 // ✅ NUEVA: Tabla intermedia para many-to-many
 model LessonQuestion {
-  id          String @id @default(uuid())
+  id String @id @default(uuid())
 
-  lessonId    String
-  lesson      Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
-  questionId  String
-  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   // Orden dentro de la lección
-  orderIndex  Int
+  orderIndex Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -173,7 +174,7 @@ model LessonQuestion {
 }
 
 model Question {
-  id       String @id @default(uuid())
+  id String @id @default(uuid())
 
   // ✅ NUEVO: Relación directa con Course (antes estaba en Lesson)
   courseId String
