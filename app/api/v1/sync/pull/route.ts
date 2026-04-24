@@ -29,7 +29,7 @@ export async function GET(req: Request) {
   const groupId = user.groupId
 
   try {
-    const data = await getOfflineContent(groupId)
+    const data = await getOfflineContent(groupId, user.id)
     return NextResponse.json({
       data: data,
       success: true,
