@@ -7,7 +7,6 @@ import {
   getRequestJson,
   jsonError,
   jsonSuccess,
-  mapDbUserToMobile,
   updateMeBodySchema,
 } from "../_lib/mobile-auth";
 
@@ -123,6 +122,8 @@ const loadCurrentUser = async (request: NextRequest) => {
       currentEnergy: true,
       maxEnergy: true,
       lastEnergyRefill: true,
+      streakDays: true,
+      lastActivityAt: true,
     },
   });
 
@@ -157,6 +158,10 @@ const loadCurrentUser = async (request: NextRequest) => {
       current: finalEnergy,
       max: userData.maxEnergy,
       nextRefillInSeconds,
+    },
+    streak: {
+      lastActivityAt: userData.lastActivityAt,
+      count: userData.streakDays,
     }
   };
 };

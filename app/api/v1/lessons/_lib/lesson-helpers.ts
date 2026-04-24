@@ -1,5 +1,6 @@
 import { Difficulty, ProgressStatus } from "@/app/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
+import { startOfDay, subDays, isSameDay } from 'date-fns';
 
 /**
  * Calcula el XP otorgado basado en la dificultad y si la respuesta fue correcta.
@@ -306,6 +307,49 @@ const isLessonUnlocked = async (lessonId: string, userId: string): Promise<boole
   return previousProgress?.status === "COMPLETED";
 };
 
+async function updateStreak(userId: string) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) return;
+
+  const now = new Date();
+  const lastActivity = user.lastActivityAt;
+
+  // Si es la primera vez que hace algo
+  if (!lastActivity) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { streakDays: 1, lastActivityAt: now }
+    })
+  }
+
+  const today = startOfDay(now);
+  const yesterday = startOfDay(subDays(now, 1));
+  const lastActivityDay = startOfDay(lastActivity);
+
+  if (isSameDay(lastActivityDay, today)) {
+    // Caso 1: Ya practicó hoy, no hacemos nada a la racha
+    return user;
+  } else if (isSameDay(lastActivityDay, yesterday)) {
+    // Caso 2: Practicó ayer, incrementamos racha
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        streakDays: { increment: 1 },
+        lastActivityAt: now
+      }
+    })
+  } else {
+    // Caso 3: Pasó más de un día, racha se reinicia
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        streakDays: 1,
+        lastActivityAt: now
+      }
+    })
+  }
+}
+
 export { 
   calculateXpDelta, 
   getNextQuestion, 
@@ -316,4 +360,5 @@ export {
   getProgressStatus,
   getAllLessonQuestions,
   isLessonUnlocked,
+  updateStreak
 };

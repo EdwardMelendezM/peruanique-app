@@ -9,7 +9,12 @@ import {
   jsonError,
   jsonSuccess,
 } from "../../../_lib/mobile-auth"
-import { calculateXpDelta, findRoadmapNode, isLessonUnlocked } from "../../_lib/lesson-helpers";
+import {
+  calculateXpDelta,
+  findRoadmapNode,
+  isLessonUnlocked,
+  updateStreak,
+} from "../../_lib/lesson-helpers"
 
 /**
  * Zod schema for POST /v1/lessons/:lessonId/answer
@@ -68,6 +73,7 @@ export async function POST(
         403
       )
     }
+    await updateStreak(user.id)
 
     // Verify lesson exists
     const lesson = await prisma.lesson.findUnique({
