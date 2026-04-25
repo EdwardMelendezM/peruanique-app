@@ -11,10 +11,26 @@ export const LessonAttemptSchema = z.object({
   answeredAt: z.number(), // Viene como timestamp (ms) de SQLite
 });
 
-export const SyncPushSchema = z.object({
-  attempts: z.array(LessonAttemptSchema),
+export const UserProfileSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string().uuid(),
+  nodeId: z.string().uuid(),
+  status: z.string(),
+  scoreObtained: z.number(),
+  starsEarned: z.number(),
 });
 
-export const SyncPullSchema = z.object({
-  groupId: z.string(),
+export const SyncQueueSchema = z.object({
+  id: z.number(),
+  type: z.string(),
+  amount: z.number(),
+  current: z.number(),
+  createdAt: z.string(),
+  status: z.string(),
+});
+
+export const SyncPushSchema = z.object({
+  attempts: z.array(LessonAttemptSchema),
+  userProgress: z.array(UserProfileSchema),
+  syncQueues: z.array(SyncQueueSchema),
 });
