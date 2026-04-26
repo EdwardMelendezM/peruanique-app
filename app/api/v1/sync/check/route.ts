@@ -41,15 +41,17 @@ export async function GET(req: Request) {
       ...relevantCourses.map(c => `QUESTIONS:${c.id}`)
     ];
 
-    if (lastSync === "0") {
+    if (`${lastSync}` === "0") {
       // First try of new user
       return NextResponse.json({
         success: true,
-        needsUpdate: true,
-        // Solo enviamos los nombres de los dominios que realmente cambiaron
-        changes: [],
-        // El móvil guardará este serverTime para su próxima consulta
-        serverTime: new Date().toISOString()
+        data: {
+          needsUpdate: true,
+          // Solo enviamos los nombres de los dominios que realmente cambiaron
+          changes: [],
+          // El móvil guardará este serverTime para su próxima consulta
+          serverTime: new Date().toISOString()
+        }
       });
     }
 
@@ -72,11 +74,13 @@ export async function GET(req: Request) {
     // 4. RESPUESTA ESTRUCTURADA
     return NextResponse.json({
       success: true,
-      needsUpdate: changes.length > 0,
-      // Solo enviamos los nombres de los dominios que realmente cambiaron
-      changes: changes.map(c => c.domain),
-      // El móvil guardará este serverTime para su próxima consulta
-      serverTime: new Date().toISOString()
+      data: {
+        needsUpdate: changes.length > 0,
+        // Solo enviamos los nombres de los dominios que realmente cambiaron
+        changes: changes.map(c => c.domain),
+        // El móvil guardará este serverTime para su próxima consulta
+        serverTime: new Date().toISOString()
+      }
     });
 
   } catch (error) {
