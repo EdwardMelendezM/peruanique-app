@@ -41,6 +41,18 @@ export async function GET(req: Request) {
       ...relevantCourses.map(c => `QUESTIONS:${c.id}`)
     ];
 
+    if (lastSync === "0") {
+      // First try of new user
+      return NextResponse.json({
+        success: true,
+        needsUpdate: true,
+        // Solo enviamos los nombres de los dominios que realmente cambiaron
+        changes: [],
+        // El móvil guardará este serverTime para su próxima consulta
+        serverTime: new Date().toISOString()
+      });
+    }
+
     // 3. CONSULTA OPTIMIZADA AL REGISTRY
     // Convertimos lastSync a Date. Si es null o inválido, usamos una fecha antigua (1970)
     const lastSyncDate = lastSync ? new Date(lastSync) : new Date(0);
