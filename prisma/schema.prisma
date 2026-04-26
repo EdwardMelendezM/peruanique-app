@@ -144,8 +144,9 @@ model Lesson {
   questions    LessonQuestion[]
   roadmapNodes RoadmapNode[] // Una lección puede estar en varios roadmaps
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isDisabled Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("lessons")
 }
@@ -163,8 +164,9 @@ model LessonQuestion {
   // Orden dentro de la lección
   orderIndex Int
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isDisabled Boolean  @default(false)
 
   // Evita agregar la misma pregunta dos veces a una lección
   @@unique([lessonId, questionId])
@@ -191,8 +193,9 @@ model Question {
   answers  Answer[]
   attempts LessonAttempt[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isDisabled Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([courseId])
   @@map("questions")
@@ -207,6 +210,10 @@ model Answer {
   isCorrect  Boolean @default(false)
 
   selectedIn LessonAttempt[] @relation("SelectedAnswer")
+
+  isDisabled Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("answers")
 }
@@ -347,4 +354,14 @@ model AiExplanation {
   createdAt DateTime      @default(now())
 
   @@map("ai_explanations")
+}
+
+model SyncRegistry {
+  id          String   @id @default(uuid())
+  domain      String   @unique // Ej: "ROADMAP:[GROUP_ID]]", "QUESTIONS:[COURSE_ID]", "ANSWERS:[QUESTION_ID]", "GLOBAL_CONFIG"
+  lastUpdated DateTime @updatedAt
+  version     Int      @default(1)
+
+  @@index([domain, lastUpdated]) // Índice optimizado para el filtrado del endpoint
+  @@map("sync_registry")
 }

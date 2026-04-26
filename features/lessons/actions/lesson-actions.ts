@@ -11,6 +11,8 @@ import {
   removeQuestionFromLessonSchema,
   reorderLessonQuestionSchema,
 } from "../schemas/lesson-schemas";
+import { markAsDirty } from "@/features/sync/actions/notify-change"
+import { SYNC_DOMAINS } from "@/conts"
 
 export type LessonActionState = {
   success: boolean;
@@ -180,7 +182,7 @@ export async function addQuestionToLesson(
   // Verify lesson and question exist
   const [lesson, question] = await Promise.all([
     prisma.lesson.findUnique({ where: { id: parsed.data.lessonId }, select: { id: true } }),
-    prisma.question.findUnique({ where: { id: parsed.data.questionId }, select: { id: true } }),
+    prisma.question.findUnique({ where: { id: parsed.data.questionId }, select: { id: true, courseId: true } }),
   ]);
 
   if (!lesson || !question) {
@@ -217,6 +219,18 @@ export async function addQuestionToLesson(
       orderIndex: newOrderIndex,
     },
   });
+
+  const roadmapsUseLessonsQuestions = await prisma.roadmapNode.findMany({
+    where: {
+      lessonId: parsed.data.lessonId,
+    }
+  });
+  const groupIds = [...new Set(roadmapsUseLessonsQuestions.map(r => r.groupId))];
+
+  await markAsDirty(SYNC_DOMAINS.QUESTIONS(question.courseId));
+  for (const groupId of groupIds) {
+    await markAsDirty(SYNC_DOMAINS.ROADMAP(groupId));
+  }
 
   revalidateLessons();
 

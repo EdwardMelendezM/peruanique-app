@@ -166,6 +166,15 @@ export async function getCourseQuestionsWithLessons(
 
   // Get all lessons that have questions from this course
   const lessons = await prisma.lesson.findMany({
+    where: { // <-- NUEVO: Filtro a nivel de Lesson
+      questions: {
+        some: {
+          question: {
+            courseId: parsed.data.id,
+          },
+        },
+      },
+    },
     select: {
       id: true,
       title: true,

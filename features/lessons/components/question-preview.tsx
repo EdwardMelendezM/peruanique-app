@@ -67,14 +67,6 @@ export function QuestionPreview({ question, onClose }: QuestionPreviewProps) {
               <DialogTitle>Vista previa de pregunta</DialogTitle>
               <DialogDescription>Detalles completos de la pregunta</DialogDescription>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="shrink-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
           </div>
         </DialogHeader>
 
@@ -113,15 +105,15 @@ export function QuestionPreview({ question, onClose }: QuestionPreviewProps) {
                   key={answer.id}
                   className={`flex items-start gap-3 p-3 rounded-lg border ${
                     answer.isCorrect
-                      ? "bg-green-50 border-green-200"
-                      : "bg-gray-50 border-gray-200"
+                      ? "bg-green-50 border-green-200 dark:bg-green-100 text-white dark:text-black"
+                      : "bg-gray-50 border-gray-200 dark:bg-gray-500"
                   }`}
                 >
                   <span
                     className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-sm font-bold flex-shrink-0 ${
                       answer.isCorrect
-                        ? "bg-green-500 text-white"
-                        : "bg-gray-300 text-gray-600"
+                        ? "bg-green-500 border-green-500"
+                        : "bg-gray-300 border-gray-200"
                     }`}
                   >
                     {answer.isCorrect ? "✓" : "○"}

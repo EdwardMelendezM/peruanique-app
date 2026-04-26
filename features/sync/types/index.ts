@@ -26,3 +26,21 @@ export interface SyncQueueInput {
   createdAt: string | Date;
   status: string;
 }
+
+export interface SyncOptions {
+  groupId: string;
+  userId: string;
+  domains: string[]; // Ej: ["ROADMAP:uuid", "QUESTIONS:course-uuid"]
+}
+
+// Estructura de retorno para el cliente (Drizzle compatible)
+export interface OfflineData {
+  courses?: any[];
+  lessons?: any[];
+  questions?: any[];
+  answers?: any[];
+  roadmap?: any[];
+  lessonQuestions?: any[];
+  userProfile?: any;
+  userProgress?: any[];
+}

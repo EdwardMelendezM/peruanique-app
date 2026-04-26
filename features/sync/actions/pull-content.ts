@@ -1,116 +1,76 @@
 import { prisma } from "@/lib/prisma"
+import { OfflineData, SyncOptions } from "@/features/sync/types"
+import { getContentByCourses } from "@/features/sync/actions/get-content-by-courses"
+import { getRoadmapData } from "@/features/sync/actions/get-roadmap-data"
 
-export async function getOfflineContent(groupId: string, userId: string) {
-  // 1. Obtener el Roadmap y las Lecciones asociadas
-  const roadmapNodes = await prisma.roadmapNode.findMany({
-    where: { groupId },
-    include: {
-      lesson: true,
-    },
-    orderBy: { orderIndex: "asc" },
-  })
+export async function getOfflineContent({ groupId, userId, domains }: SyncOptions): Promise<OfflineData> {
+  const results: OfflineData = {};
+  const isInitialSync = domains.length === 0;
 
-  const nodeIds = roadmapNodes.map((n) => n.id)
+  // 1. Validar si necesitamos actualizar la lista global de cursos
+  if (isInitialSync || domains.includes("COURSES_CONTENT")) {
+    const courses = await prisma.course.findMany();
+    results.courses = courses.map(c => ({
+      ...c,
+      updatedAt: c.updatedAt.getTime()
+    }));
+  }
 
-  const lessonIds = roadmapNodes.map((n) => n.lessonId)
+  // 2. Validar si necesitamos Roadmaps específicos
+  if (isInitialSync || domains.includes(`ROADMAP:${groupId}`)) {
+    const { roadmap, lessons } = await getRoadmapData(groupId);
+    results.roadmap = roadmap;
+    results.lessons = lessons;
+  }
 
-  // 2. Obtener la relación Many-to-Many de preguntas para esas lecciones
-  const lessonQuestions = await prisma.lessonQuestion.findMany({
-    where: { lessonId: { in: lessonIds } },
-    orderBy: { orderIndex: "asc" },
-  })
+  // 3. Validar si hay cubetas de preguntas específicas (QUESTIONS:courseId)
+  const courseIdsToSync = domains
+    .filter(d => d.startsWith("QUESTIONS:"))
+    .map(d => d.split(":")[1]);
 
-  const questionIds = lessonQuestions.map((lq) => lq.questionId)
+  if (courseIdsToSync.length > 0 || isInitialSync) {
+    // Si es initialSync, primero necesitamos saber qué cursos tiene el grupo
+    let finalCourseIds = courseIdsToSync;
 
-  // 3. Obtener las Preguntas, sus Respuestas y sus Cursos
-  const questions = await prisma.question.findMany({
-    where: { id: { in: questionIds } },
-    include: {
-      answers: true,
-      course: true,
-    },
-  })
-
-  // 4. Aplanar la data para cumplir con el esquema de Drizzle (Mobile)
-  // Usamos un Map para evitar duplicados de cursos
-  const coursesMap = new Map()
-
-  const formattedQuestions = questions.map((q) => {
-    if (!coursesMap.has(q.course.id)) {
-      coursesMap.set(q.course.id, q.course)
+    if (isInitialSync) {
+      const groupCourses = await prisma.question.findMany({
+        where: { lessons: { some: { lesson: { roadmapNodes: { some: { groupId } } } } } },
+        select: { courseId: true },
+        distinct: ['courseId']
+      });
+      finalCourseIds = groupCourses.map(c => c.courseId);
     }
 
-    return {
-      id: q.id,
-      courseId: q.courseId,
-      questionText: q.questionText,
-      explanationText: q.explanationText,
-      difficulty: q.difficulty,
-      type: q.type,
-      from_source: q.from, // Mapeo de 'from' (Prisma) a 'from_source' (Drizzle)
-      updatedAt: q.updatedAt.getTime(), // Convertimos Date a timestamp para SQLite
-    }
-  })
+    const content = await getContentByCourses(finalCourseIds);
+    results.questions = content.questions;
+    results.answers = content.answers;
+    results.lessonQuestions = content.lessonQuestions;
+  }
 
+  // 4. Datos del Usuario (Se sincronizan siempre por ser ligeros y críticos)
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { profile: true },
-  })
+    include: { profile: true }
+  });
 
-  // B. Obtener el progreso del usuario (solo para los nodos de este grupo)
-  const userProgress = await prisma.userProgress.findMany({
-    where: {
-      userId,
-      nodeId: { in: nodeIds }, // Optimización: Solo traemos progreso relevante a este roadmap
-    },
-  })
+  if (user) {
+    results.userProfile = {
+      userId: user.id,
+      full_name: user.full_name,
+      totalXp: user.totalXp,
+      streakDays: user.streakDays,
+      targetUniversity: user.profile?.targetUniversity || null,
+    };
 
-  const mappedUserProfile = user
-    ? {
-        userId: user.id,
-        full_name: user.full_name,
-        targetUniversity: user.profile?.targetUniversity || null,
-        currentLevelTag: user.profile?.currentLevelTag || "novato",
-        totalXp: user.totalXp,
-        streakDays: user.streakDays,
-      }
-    : null
+    const userProgress = await prisma.userProgress.findMany({
+      where: { userId, node: { groupId } }
+    });
 
-  return {
-    courses: Array.from(coursesMap.values()).map((c) => ({
-      ...c,
-      updatedAt: c.updatedAt.getTime(),
-    })),
-    lessons: roadmapNodes.map((rn) => ({
-      ...rn.lesson,
-      updatedAt: rn.lesson.updatedAt.getTime(),
-    })),
-    questions: formattedQuestions,
-    answers: questions.flatMap((q) =>
-      q.answers.map((a) => ({
-        id: a.id,
-        questionId: a.questionId,
-        answerText: a.answerText,
-        isCorrect: a.isCorrect,
-      }))
-    ),
-    roadmap: roadmapNodes.map(({ lesson, ...node }) => ({
-      ...node,
-      updatedAt: node.updatedAt.getTime(),
-    })),
-    lessonQuestions: lessonQuestions.map((lq) => ({
-      ...lq,
-      updatedAt: lq.updatedAt.getTime(),
-    })),
-    userProfile: mappedUserProfile,
-    userProgress: userProgress.map((p) => ({
-      id: p.id,
-      userId: p.userId,
-      nodeId: p.nodeId,
-      status: p.status,
-      scoreObtained: p.scoreObtained,
-      starsEarned: p.starsEarned,
-      updatedAt: p.updatedAt.getTime(), // Convertido para Drizzle timestamp
-    })),
+    results.userProgress = userProgress.map(p => ({
+      ...p,
+      updatedAt: p.updatedAt.getTime()
+    }));
   }
+
+  return results;
 }

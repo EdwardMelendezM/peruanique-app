@@ -4,38 +4,34 @@ import { getOfflineContent } from "@/features/sync/actions/pull-content"
 import { jsonError } from "@/app/api/v1/_lib/mobile-auth"
 import { prisma } from "@/lib/prisma"
 
-export async function GET(req: Request) {
-  const session = await auth.api.getSession({ headers: req.headers })
+export async function POST(req: Request) {
+  const session = await auth.api.getSession({ headers: req.headers });
+  if (!session) return jsonError("UNAUTHORIZED", "Session not found", 401);
 
-  if (!session) {
-    return jsonError("UNAUTHORIZED", "Session not found", 401)
-  }
+  // Recibimos los dominios del body (POST es mejor para enviar arrays largos)
+  const { domains = [] } = await req.json();
 
-  // Obtenemos el groupId del usuario (o del query param como fallback)
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    select: {
-      id: true,
-      groupId: true,
-    },
-  })
-  if (!user) {
-    return jsonError("UNAUTHORIZED", "Session not found", 401)
-  }
-  if (!user.groupId) {
-    return jsonError("UNAUTHORIZED", "User does not have group", 400)
-  }
+    select: { id: true, groupId: true }
+  });
 
-  const groupId = user.groupId
+  if (!user?.groupId) return jsonError("FORBIDDEN", "User group missing", 400);
 
   try {
-    const data = await getOfflineContent(groupId, user.id)
+    const data = await getOfflineContent({
+      domains,
+      groupId: user.groupId,
+      userId: user.id
+    });
+
     return NextResponse.json({
-      data: data,
+      data,
+      serverTime: new Date().toISOString(),
       success: true,
-    })
+    });
   } catch (error) {
-    console.error("[SYNC_PULL_ERROR]", error)
-    return jsonError("SERVER_ERROR", "Failed to pull", 500)
+    console.error("[ERROR_PULL_REQUEST]", error);
+    return jsonError("SERVER_ERROR", "Sync failed", 500);
   }
 }

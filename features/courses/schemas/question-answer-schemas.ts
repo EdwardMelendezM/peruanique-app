@@ -15,7 +15,7 @@ export const questionTypeValues = ["MULTIPLE_CHOICE", "DRAG_AND_DROP"] as const;
 
 export const createQuestionSchema = z.object({
   courseId: uuidSchema,
-  lessonId: uuidSchema,
+  // lessonId: uuidSchema,
   questionText: z
     .string()
     .trim()

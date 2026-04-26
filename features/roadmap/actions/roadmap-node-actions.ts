@@ -8,6 +8,8 @@ import {
   deleteRoadmapNodeSchema,
   updateRoadmapNodeSchema,
 } from "../schemas/roadmap-node-schemas";
+import { markAsDirty } from "@/features/sync/actions/notify-change"
+import { SYNC_DOMAINS } from "@/conts"
 
 type RoadmapNodeField = "groupId" | "nodeId" | "lessonId" | "orderIndex";
 
@@ -104,6 +106,7 @@ export async function createRoadmapNode(
     },
   });
 
+  await markAsDirty(SYNC_DOMAINS.ROADMAP(group.id));
   revalidateRoadmap();
 
   return { success: true, message: "Nodo creado correctamente" };
@@ -136,7 +139,7 @@ export async function updateRoadmapNode(
       id: parsed.data.nodeId,
       groupId: parsed.data.groupId,
     },
-    select: { id: true },
+    select: { id: true, groupId: true },
   });
 
   if (!existingNode) {
@@ -169,6 +172,7 @@ export async function updateRoadmapNode(
     },
   });
 
+  await markAsDirty(SYNC_DOMAINS.ROADMAP(existingNode.groupId));
   revalidateRoadmap();
 
   return { success: true, message: "Nodo actualizado correctamente" };
@@ -192,6 +196,7 @@ export async function deleteRoadmapNode(groupId: string, nodeId: string): Promis
     },
     select: {
       id: true,
+      groupId: true,
       _count: {
         select: {
           userProgress: true,
@@ -207,6 +212,7 @@ export async function deleteRoadmapNode(groupId: string, nodeId: string): Promis
 
   await prisma.roadmapNode.delete({ where: { id: parsed.data.nodeId } });
 
+  await markAsDirty(SYNC_DOMAINS.ROADMAP(node.groupId));
   revalidateRoadmap();
 
   const dependents = node._count.userProgress + node._count.attempts;
@@ -219,4 +225,3 @@ export async function deleteRoadmapNode(groupId: string, nodeId: string): Promis
         : "Nodo eliminado correctamente",
   };
 }
-

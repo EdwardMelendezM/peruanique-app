@@ -11,6 +11,8 @@ import {
   updateAnswerSchema,
   updateQuestionSchema,
 } from "../schemas/question-answer-schemas";
+import { markAsDirty } from "@/features/sync/actions/notify-change"
+import { SYNC_DOMAINS } from "@/conts"
 
 type QuestionField = "courseId" | "questionId" | "questionText" | "explanationText" | "from" | "difficulty" | "type";
 type AnswerField = "courseId" | "questionId" | "answerId" | "answerText" | "isCorrect";
@@ -81,6 +83,7 @@ export async function createQuestion(
   }
 
   const parsed = createQuestionSchema.safeParse(mapQuestionCreateData(formData));
+  console.log("[parsed]", parsed);
 
   if (!parsed.success) {
     const fieldErrors: NonNullable<QuestionActionState["fieldErrors"]> = {};
@@ -97,6 +100,7 @@ export async function createQuestion(
         fieldErrors[key as QuestionField] = issue.message;
       }
     }
+    console.log("[ERROR]", fieldErrors)
 
     return { success: false, error: "Revisa los campos del formulario", fieldErrors };
   }
@@ -126,7 +130,7 @@ export async function createQuestion(
       type: parsed.data.type,
     },
   });
-
+  await markAsDirty(SYNC_DOMAINS.QUESTIONS(course.id));
   revalidateCourseQuestions(parsed.data.courseId);
 
   return { success: true, message: "Pregunta creada exitosamente" };
@@ -186,6 +190,7 @@ export async function updateQuestion(
     },
   });
 
+  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId));
   revalidateCourseQuestions(parsed.data.courseId);
 
   return {
@@ -226,6 +231,7 @@ export async function deleteQuestion(courseId: string, questionId: string): Prom
     where: { id: parsed.data.questionId },
   });
 
+  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId));
   revalidateCourseQuestions(parsed.data.courseId);
 
   return {
@@ -280,6 +286,7 @@ export async function createAnswer(
     },
   });
 
+  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId));
   revalidateCourseQuestions(parsed.data.courseId);
 
   return {
@@ -340,6 +347,7 @@ export async function updateAnswer(
     },
   });
 
+  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId));
   revalidateCourseQuestions(parsed.data.courseId);
 
   return {
@@ -379,6 +387,7 @@ export async function deleteAnswer(
     return { success: false, error: "La respuesta no existe o no pertenece al curso" };
   }
 
+  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId));
   await prisma.answer.delete({
     where: { id: parsed.data.answerId },
   });

@@ -10,6 +10,8 @@ import {
   type CourseCreateInput,
   type CourseUpdateInput,
 } from "../schemas/course-schemas";
+import { markAsDirty } from "@/features/sync/actions/notify-change"
+import { SYNC_DOMAINS } from "@/conts"
 
 export type CourseListItem = {
   id: string;
@@ -140,6 +142,7 @@ export async function createCourse(
     },
   });
 
+  await markAsDirty(SYNC_DOMAINS.COURSES_CONTENT);
   revalidatePath("/admin/courses");
 
   return {
@@ -195,6 +198,7 @@ export async function updateCourse(
     },
   });
 
+  await markAsDirty(SYNC_DOMAINS.COURSES_CONTENT);
   revalidatePath("/admin/courses");
   revalidatePath(`/admin/courses/${course.id}/edit`);
 
@@ -234,6 +238,7 @@ export async function deleteCourse(courseId: string): Promise<CourseActionState>
     where: { id: parsed.data.id },
   });
 
+  await markAsDirty(SYNC_DOMAINS.COURSES_CONTENT);
   revalidatePath("/admin/courses");
 
   return {
