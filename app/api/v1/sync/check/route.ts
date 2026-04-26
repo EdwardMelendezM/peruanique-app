@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     if (!session) return jsonError("UNAUTHORIZED", "No session", 401);
 
     const { searchParams } = new URL(req.url);
-    const lastSync = searchParams.get("lastSync");
+    const lastSync = Number(searchParams.get("lastSync")) || 0;
     const groupId = searchParams.get("groupId");
 
     if (!groupId) return jsonError("FORBIDDEN", "Missing groupId", 400);
@@ -41,7 +41,7 @@ export async function GET(req: Request) {
       ...relevantCourses.map(c => `QUESTIONS:${c.id}`)
     ];
 
-    if (`${lastSync}` === "0") {
+    if (lastSync === 0) {
       // First try of new user
       return NextResponse.json({
         success: true,
@@ -57,7 +57,7 @@ export async function GET(req: Request) {
 
     // 3. CONSULTA OPTIMIZADA AL REGISTRY
     // Convertimos lastSync a Date. Si es null o inválido, usamos una fecha antigua (1970)
-    const lastSyncDate = lastSync ? new Date(lastSync) : new Date(0);
+    const lastSyncDate = lastSync != 0 ? new Date(lastSync) : new Date(0);
 
     const changes = await prisma.syncRegistry.findMany({
       where: {
