@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const LessonAttemptSchema = z.object({
-  id: z.string().uuid(),
-  userId: z.string().uuid(),
+  id: z.string(),
+  userId: z.string(),
   nodeId: z.string(),
   questionId: z.string(),
   selectedAnswerId: z.string(),
@@ -11,10 +11,10 @@ export const LessonAttemptSchema = z.object({
   answeredAt: z.number(), // Viene como timestamp (ms) de SQLite
 });
 
-export const UserProfileSchema = z.object({
-  id: z.string().uuid(),
-  userId: z.string().uuid(),
-  nodeId: z.string().uuid(),
+export const UserProgressSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  nodeId: z.string(),
   status: z.string(),
   scoreObtained: z.number(),
   starsEarned: z.number(),
@@ -31,6 +31,6 @@ export const SyncQueueSchema = z.object({
 
 export const SyncPushSchema = z.object({
   attempts: z.array(LessonAttemptSchema),
-  userProgress: z.array(UserProfileSchema),
+  userProgress: z.array(UserProgressSchema),
   syncQueues: z.array(SyncQueueSchema),
 });

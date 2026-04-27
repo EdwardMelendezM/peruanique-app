@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       ...a,
       // Si viene como número (ms) o string, lo convertimos a Date
       answeredAt: new Date(a.answeredAt),
-    }))
+    }));
 
     // Usamos session.user.id directamente para mayor velocidad
     const [resultAttempts, resultsUserProgress, resultQueueIds] = await Promise.all([
