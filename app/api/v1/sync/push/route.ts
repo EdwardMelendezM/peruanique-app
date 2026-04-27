@@ -6,6 +6,12 @@ import { jsonError } from "@/app/api/v1/_lib/mobile-auth"
 import { syncUserProgress } from "@/features/sync/actions/push-user-progress"
 import { syncStats } from "@/features/sync/actions/push-stats"
 
+/**
+ * POST /v1/sync/push
+ * Guardar los nuevos cambios offline del cliente mobile
+ * Agrega los intentos, progreso y estadisticas acumuladas
+ * Requiere autenticación.
+ */
 export async function POST(request: NextRequest) {
   const session = await auth.api.getSession({ headers: request.headers })
   if (!session?.user) return jsonError("UNAUTHORIZED", "Session not found", 401)
@@ -28,7 +34,7 @@ export async function POST(request: NextRequest) {
       syncStats(session.user.id, syncQueues),
     ])
     return NextResponse.json({
-      status: true,
+      success: true,
       data: {
         attemptsSyncedIds: resultAttempts.syncedIds,
         userProgressSyncedIds: resultsUserProgress.syncedIds,
