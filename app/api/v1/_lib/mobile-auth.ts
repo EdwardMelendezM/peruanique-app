@@ -8,7 +8,6 @@ import { prisma } from "@/lib/prisma"
 export const registerBodySchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  username: z.string().trim().min(2),
   fullName: z.string().trim().min(2),
 });
 

@@ -21,7 +21,7 @@ import { auth } from "@/lib/auth";
 export async function POST(request: NextRequest) {
   const rawBody = await getRequestJson<unknown>(request);
   const parsed = registerBodySchema.safeParse(rawBody);
-
+  console.log("[RAW_BODY]", rawBody);
   if (!parsed.success) {
     return jsonError("VALIDATION_ERROR", "Invalid registration data", 422);
   }
