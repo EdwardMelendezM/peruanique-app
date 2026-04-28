@@ -1,52 +1,66 @@
-"use server";
+"use server"
 
-import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/get-session";
+import { revalidatePath } from "next/cache"
+import { prisma } from "@/lib/prisma"
+import { getSession } from "@/lib/get-session"
 import {
-  createAnswerSchema,
+  createAnswerSchemaWithMetadata,
   createQuestionSchema,
   deleteAnswerSchema,
   deleteQuestionSchema,
   updateAnswerSchema,
   updateQuestionSchema,
-} from "../schemas/question-answer-schemas";
+} from "../schemas/question-answer-schemas"
 import { markAsDirty } from "@/features/sync/actions/notify-change"
 import { SYNC_DOMAINS } from "@/conts"
 
-type QuestionField = "courseId" | "questionId" | "questionText" | "explanationText" | "from" | "difficulty" | "type";
-type AnswerField = "courseId" | "questionId" | "answerId" | "answerText" | "isCorrect";
+type QuestionField =
+  | "courseId"
+  | "questionId"
+  | "questionText"
+  | "explanationText"
+  | "from"
+  | "difficulty"
+  | "type"
+  | "metadata"
+type AnswerField =
+  | "courseId"
+  | "questionId"
+  | "answerId"
+  | "answerText"
+  | "isCorrect"
+  | "metadata"
 
 export type QuestionActionState = {
-  success: boolean;
-  message?: string;
-  error?: string;
-  fieldErrors?: Partial<Record<QuestionField, string>>;
-};
+  success: boolean
+  message?: string
+  error?: string
+  fieldErrors?: Partial<Record<QuestionField, string>>
+}
 
 export type AnswerActionState = {
-  success: boolean;
-  message?: string;
-  error?: string;
-  fieldErrors?: Partial<Record<AnswerField, string>>;
-};
+  success: boolean
+  message?: string
+  error?: string
+  fieldErrors?: Partial<Record<AnswerField, string>>
+}
 
 const getStringValue = (value: FormDataEntryValue | null) => {
-  return typeof value === "string" ? value : "";
-};
+  return typeof value === "string" ? value : ""
+}
 
 const getBooleanValue = (value: FormDataEntryValue | null) => {
-  return value === "on" || value === "true";
-};
+  return value === "on" || value === "true"
+}
 
 const revalidateCourseQuestions = (courseId: string) => {
-  revalidatePath(`/admin/courses/${courseId}/questions`);
-};
+  revalidatePath(`/admin/courses/${courseId}/questions`)
+}
 
 const ensureAuth = async () => {
-  const session = await getSession();
-  return session.success;
-};
+  const session = await getSession()
+  return session.success
+}
 
 const mapQuestionCreateData = (formData: FormData) => ({
   courseId: getStringValue(formData.get("courseId")),
@@ -55,40 +69,42 @@ const mapQuestionCreateData = (formData: FormData) => ({
   from: getStringValue(formData.get("from")),
   difficulty: getStringValue(formData.get("difficulty")),
   type: getStringValue(formData.get("type")),
-});
+  metadata: getStringValue(formData.get("metadata")),
+})
 
 const mapQuestionUpdateData = (formData: FormData) => ({
   questionId: getStringValue(formData.get("questionId")),
   ...mapQuestionCreateData(formData),
-});
+})
 
 const mapAnswerCreateData = (formData: FormData) => ({
   courseId: getStringValue(formData.get("courseId")),
   questionId: getStringValue(formData.get("questionId")),
   answerText: getStringValue(formData.get("answerText")),
   isCorrect: getBooleanValue(formData.get("isCorrect")),
-});
+  metadata: getStringValue(formData.get("metadata")),
+})
 
 const mapAnswerUpdateData = (formData: FormData) => ({
   answerId: getStringValue(formData.get("answerId")),
   ...mapAnswerCreateData(formData),
-});
+})
 
 export async function createQuestion(
   _state: QuestionActionState,
   formData: FormData
 ): Promise<QuestionActionState> {
   if (!(await ensureAuth())) {
-    return { success: false, error: "No autorizado" };
+    return { success: false, error: "No autorizado" }
   }
 
-  const parsed = createQuestionSchema.safeParse(mapQuestionCreateData(formData));
-  console.log("[parsed]", parsed);
+  const parsed = createQuestionSchema.safeParse(mapQuestionCreateData(formData))
+  console.log("[parsed]", parsed)
 
   if (!parsed.success) {
-    const fieldErrors: NonNullable<QuestionActionState["fieldErrors"]> = {};
+    const fieldErrors: NonNullable<QuestionActionState["fieldErrors"]> = {}
     for (const issue of parsed.error.issues) {
-      const key = issue.path[0];
+      const key = issue.path[0]
       if (
         key === "courseId" ||
         key === "questionText" ||
@@ -97,26 +113,44 @@ export async function createQuestion(
         key === "difficulty" ||
         key === "type"
       ) {
-        fieldErrors[key as QuestionField] = issue.message;
+        fieldErrors[key as QuestionField] = issue.message
       }
     }
     console.log("[ERROR]", fieldErrors)
 
-    return { success: false, error: "Revisa los campos del formulario", fieldErrors };
+    return {
+      success: false,
+      error: "Revisa los campos del formulario",
+      fieldErrors,
+    }
   }
 
   // Verify course exists
   const course = await prisma.course.findUnique({
     where: { id: parsed.data.courseId },
     select: { id: true },
-  });
+  })
 
   if (!course) {
     return {
       success: false,
       error: "El curso no existe",
       fieldErrors: { courseId: "Selecciona un curso válido" },
-    };
+    }
+  }
+
+  // Parse metadata JSON if provided
+  let parsedMetadata: any = undefined
+  if (parsed.data.metadata) {
+    try {
+      parsedMetadata = JSON.parse(parsed.data.metadata as unknown as string)
+    } catch (e) {
+      return {
+        success: false,
+        error: "Metadata inválida: debe ser JSON válido",
+        fieldErrors: { type: "Metadata inválida" },
+      }
+    }
   }
 
   // Ahora la pregunta se crea directamente con courseId
@@ -128,12 +162,13 @@ export async function createQuestion(
       from: parsed.data.from,
       difficulty: parsed.data.difficulty,
       type: parsed.data.type,
+      metadata: parsedMetadata,
     },
-  });
-  await markAsDirty(SYNC_DOMAINS.QUESTIONS(course.id));
-  revalidateCourseQuestions(parsed.data.courseId);
+  })
+  await markAsDirty(SYNC_DOMAINS.QUESTIONS(course.id))
+  revalidateCourseQuestions(parsed.data.courseId)
 
-  return { success: true, message: "Pregunta creada exitosamente" };
+  return { success: true, message: "Pregunta creada exitosamente" }
 }
 
 export async function updateQuestion(
@@ -141,15 +176,15 @@ export async function updateQuestion(
   formData: FormData
 ): Promise<QuestionActionState> {
   if (!(await ensureAuth())) {
-    return { success: false, error: "No autorizado" };
+    return { success: false, error: "No autorizado" }
   }
 
-  const parsed = updateQuestionSchema.safeParse(mapQuestionUpdateData(formData));
+  const parsed = updateQuestionSchema.safeParse(mapQuestionUpdateData(formData))
 
   if (!parsed.success) {
-    const fieldErrors: NonNullable<QuestionActionState["fieldErrors"]> = {};
+    const fieldErrors: NonNullable<QuestionActionState["fieldErrors"]> = {}
     for (const issue of parsed.error.issues) {
-      const key = issue.path[0];
+      const key = issue.path[0]
       if (
         key === "courseId" ||
         key === "questionId" ||
@@ -159,11 +194,15 @@ export async function updateQuestion(
         key === "difficulty" ||
         key === "type"
       ) {
-        fieldErrors[key as QuestionField] = issue.message;
+        fieldErrors[key as QuestionField] = issue.message
       }
     }
 
-    return { success: false, error: "Revisa los campos del formulario", fieldErrors };
+    return {
+      success: false,
+      error: "Revisa los campos del formulario",
+      fieldErrors,
+    }
   }
 
   // Verify question belongs to course
@@ -173,10 +212,27 @@ export async function updateQuestion(
       courseId: parsed.data.courseId,
     },
     select: { id: true },
-  });
+  })
 
   if (!existingQuestion) {
-    return { success: false, error: "La pregunta no existe o no pertenece al curso" };
+    return {
+      success: false,
+      error: "La pregunta no existe o no pertenece al curso",
+    }
+  }
+
+  // Parse metadata JSON if provided
+  let parsedMetadata: any = undefined
+  if (parsed.data.metadata) {
+    try {
+      parsedMetadata = JSON.parse(parsed.data.metadata as unknown as string)
+    } catch (e) {
+      return {
+        success: false,
+        error: "Metadata inválida: debe ser JSON válido",
+        fieldErrors: { type: "Metadata inválida" },
+      }
+    }
   }
 
   await prisma.question.update({
@@ -187,27 +243,31 @@ export async function updateQuestion(
       from: parsed.data.from,
       difficulty: parsed.data.difficulty,
       type: parsed.data.type,
+      metadata: parsedMetadata,
     },
-  });
+  })
 
-  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId));
-  revalidateCourseQuestions(parsed.data.courseId);
+  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId))
+  revalidateCourseQuestions(parsed.data.courseId)
 
   return {
     success: true,
     message: "Pregunta actualizada correctamente",
-  };
+  }
 }
 
-export async function deleteQuestion(courseId: string, questionId: string): Promise<QuestionActionState> {
+export async function deleteQuestion(
+  courseId: string,
+  questionId: string
+): Promise<QuestionActionState> {
   if (!(await ensureAuth())) {
-    return { success: false, error: "No autorizado" };
+    return { success: false, error: "No autorizado" }
   }
 
-  const parsed = deleteQuestionSchema.safeParse({ courseId, questionId });
+  const parsed = deleteQuestionSchema.safeParse({ courseId, questionId })
 
   if (!parsed.success) {
-    return { success: false, error: "Solicitud inválida" };
+    return { success: false, error: "Solicitud inválida" }
   }
 
   const existingQuestion = await prisma.question.findFirst({
@@ -221,18 +281,21 @@ export async function deleteQuestion(courseId: string, questionId: string): Prom
         select: { answers: true },
       },
     },
-  });
+  })
 
   if (!existingQuestion) {
-    return { success: false, error: "La pregunta no existe o no pertenece al curso" };
+    return {
+      success: false,
+      error: "La pregunta no existe o no pertenece al curso",
+    }
   }
 
   await prisma.question.delete({
     where: { id: parsed.data.questionId },
-  });
+  })
 
-  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId));
-  revalidateCourseQuestions(parsed.data.courseId);
+  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId))
+  revalidateCourseQuestions(parsed.data.courseId)
 
   return {
     success: true,
@@ -240,7 +303,7 @@ export async function deleteQuestion(courseId: string, questionId: string): Prom
       existingQuestion._count.answers > 0
         ? `Pregunta eliminada junto con ${existingQuestion._count.answers} respuesta(s)`
         : "Pregunta eliminada correctamente",
-  };
+  }
 }
 
 export async function createAnswer(
@@ -248,21 +311,32 @@ export async function createAnswer(
   formData: FormData
 ): Promise<AnswerActionState> {
   if (!(await ensureAuth())) {
-    return { success: false, error: "No autorizado" };
+    return { success: false, error: "No autorizado" }
   }
 
-  const parsed = createAnswerSchema.safeParse(mapAnswerCreateData(formData));
+  const parsed = createAnswerSchemaWithMetadata.safeParse(
+    mapAnswerCreateData(formData)
+  )
 
   if (!parsed.success) {
-    const fieldErrors: NonNullable<AnswerActionState["fieldErrors"]> = {};
+    const fieldErrors: NonNullable<AnswerActionState["fieldErrors"]> = {}
     for (const issue of parsed.error.issues) {
-      const key = issue.path[0];
-      if (key === "courseId" || key === "questionId" || key === "answerText" || key === "isCorrect") {
-        fieldErrors[key as AnswerField] = issue.message;
+      const key = issue.path[0]
+      if (
+        key === "courseId" ||
+        key === "questionId" ||
+        key === "answerText" ||
+        key === "isCorrect"
+      ) {
+        fieldErrors[key as AnswerField] = issue.message
       }
     }
 
-    return { success: false, error: "Revisa los campos del formulario", fieldErrors };
+    return {
+      success: false,
+      error: "Revisa los campos del formulario",
+      fieldErrors,
+    }
   }
 
   // Verify question belongs to course
@@ -272,10 +346,29 @@ export async function createAnswer(
       courseId: parsed.data.courseId,
     },
     select: { id: true },
-  });
+  })
 
   if (!question) {
-    return { success: false, error: "La pregunta no existe o no pertenece al curso" };
+    return {
+      success: false,
+      error: "La pregunta no existe o no pertenece al curso",
+    }
+  }
+
+  // Parse metadata JSON if provided
+  let parsedMetadata: any = undefined
+  if ((parsed as any).data?.metadata) {
+    try {
+      parsedMetadata = JSON.parse(
+        (parsed as any).data.metadata as unknown as string
+      )
+    } catch (e) {
+      return {
+        success: false,
+        error: "Metadata inválida: debe ser JSON válido",
+        fieldErrors: { answerText: "Metadata inválida" },
+      }
+    }
   }
 
   await prisma.answer.create({
@@ -283,16 +376,17 @@ export async function createAnswer(
       questionId: parsed.data.questionId,
       answerText: parsed.data.answerText,
       isCorrect: parsed.data.isCorrect,
+      metadata: parsedMetadata,
     },
-  });
+  })
 
-  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId));
-  revalidateCourseQuestions(parsed.data.courseId);
+  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId))
+  revalidateCourseQuestions(parsed.data.courseId)
 
   return {
     success: true,
     message: "Respuesta creada correctamente",
-  };
+  }
 }
 
 export async function updateAnswer(
@@ -300,15 +394,15 @@ export async function updateAnswer(
   formData: FormData
 ): Promise<AnswerActionState> {
   if (!(await ensureAuth())) {
-    return { success: false, error: "No autorizado" };
+    return { success: false, error: "No autorizado" }
   }
 
-  const parsed = updateAnswerSchema.safeParse(mapAnswerUpdateData(formData));
+  const parsed = updateAnswerSchema.safeParse(mapAnswerUpdateData(formData))
 
   if (!parsed.success) {
-    const fieldErrors: NonNullable<AnswerActionState["fieldErrors"]> = {};
+    const fieldErrors: NonNullable<AnswerActionState["fieldErrors"]> = {}
     for (const issue of parsed.error.issues) {
-      const key = issue.path[0];
+      const key = issue.path[0]
       if (
         key === "courseId" ||
         key === "questionId" ||
@@ -316,11 +410,15 @@ export async function updateAnswer(
         key === "answerText" ||
         key === "isCorrect"
       ) {
-        fieldErrors[key as AnswerField] = issue.message;
+        fieldErrors[key as AnswerField] = issue.message
       }
     }
 
-    return { success: false, error: "Revisa los campos del formulario", fieldErrors };
+    return {
+      success: false,
+      error: "Revisa los campos del formulario",
+      fieldErrors,
+    }
   }
 
   // Verify answer belongs to question and question belongs to course
@@ -333,10 +431,29 @@ export async function updateAnswer(
       },
     },
     select: { id: true },
-  });
+  })
 
   if (!answer) {
-    return { success: false, error: "La respuesta no existe o no pertenece al curso" };
+    return {
+      success: false,
+      error: "La respuesta no existe o no pertenece al curso",
+    }
+  }
+
+  // Parse metadata JSON if provided
+  let parsedMetadata: any = undefined
+  if ((parsed as any).data?.metadata) {
+    try {
+      parsedMetadata = JSON.parse(
+        (parsed as any).data.metadata as unknown as string
+      )
+    } catch (e) {
+      return {
+        success: false,
+        error: "Metadata inválida: debe ser JSON válido",
+        fieldErrors: { answerText: "Metadata inválida" },
+      }
+    }
   }
 
   await prisma.answer.update({
@@ -344,16 +461,17 @@ export async function updateAnswer(
     data: {
       answerText: parsed.data.answerText,
       isCorrect: parsed.data.isCorrect,
+      metadata: parsedMetadata,
     },
-  });
+  })
 
-  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId));
-  revalidateCourseQuestions(parsed.data.courseId);
+  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId))
+  revalidateCourseQuestions(parsed.data.courseId)
 
   return {
     success: true,
     message: "Respuesta actualizada correctamente",
-  };
+  }
 }
 
 export async function deleteAnswer(
@@ -362,13 +480,17 @@ export async function deleteAnswer(
   answerId: string
 ): Promise<AnswerActionState> {
   if (!(await ensureAuth())) {
-    return { success: false, error: "No autorizado" };
+    return { success: false, error: "No autorizado" }
   }
 
-  const parsed = deleteAnswerSchema.safeParse({ courseId, questionId, answerId });
+  const parsed = deleteAnswerSchema.safeParse({
+    courseId,
+    questionId,
+    answerId,
+  })
 
   if (!parsed.success) {
-    return { success: false, error: "Solicitud inválida" };
+    return { success: false, error: "Solicitud inválida" }
   }
 
   // Verify answer belongs to question and question belongs to course
@@ -381,22 +503,24 @@ export async function deleteAnswer(
       },
     },
     select: { id: true },
-  });
+  })
 
   if (!answer) {
-    return { success: false, error: "La respuesta no existe o no pertenece al curso" };
+    return {
+      success: false,
+      error: "La respuesta no existe o no pertenece al curso",
+    }
   }
 
-  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId));
+  await markAsDirty(SYNC_DOMAINS.QUESTIONS(parsed.data.courseId))
   await prisma.answer.delete({
     where: { id: parsed.data.answerId },
-  });
+  })
 
-  revalidateCourseQuestions(parsed.data.courseId);
+  revalidateCourseQuestions(parsed.data.courseId)
 
   return {
     success: true,
     message: "Respuesta eliminada correctamente",
-  };
+  }
 }
-

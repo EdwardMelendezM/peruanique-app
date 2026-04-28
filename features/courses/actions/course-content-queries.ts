@@ -1,56 +1,63 @@
-import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/get-session";
-import { courseIdOnlySchema } from "../schemas/course-schemas";
+import { prisma } from "@/lib/prisma"
+import { getSession } from "@/lib/get-session"
+import { courseIdOnlySchema } from "../schemas/course-schemas"
 
 export type CourseAnswerItem = {
-  id: string;
-  answerText: string;
-  isCorrect: boolean;
-};
+  id: string
+  answerText: string
+  isCorrect: boolean
+  metadata?: any | null
+}
 
 export type CourseQuestionItem = {
-  id: string;
-  questionText: string;
-  explanationText: string | null;
-  from: string | null;
-  difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "PROFESSIONAL";
-  type: "MULTIPLE_CHOICE" | "DRAG_AND_DROP";
-  answers: CourseAnswerItem[];
-};
+  id: string
+  questionText: string
+  explanationText: string | null
+  from: string | null
+  difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "PROFESSIONAL"
+  type:
+    | "MULTIPLE_CHOICE"
+    | "DRAG_AND_DROP"
+    | "LONG_TEXT"
+    | "MATH_EXPRESSION"
+    | "IMAGE_BASED"
+  answers: CourseAnswerItem[]
+  metadata?: any | null
+}
 
 export type CourseLessonWithQuestions = {
-  id: string;
-  title: string;
-  questions: CourseQuestionItem[];
-};
+  id: string
+  title: string
+  questions: CourseQuestionItem[]
+}
 
 export type CourseQuestionTree = {
   course: {
-    id: string;
-    name: string;
-  };
-  questions: CourseQuestionItem[];
-};
+    id: string
+    name: string
+  }
+  questions: CourseQuestionItem[]
+}
 
 export type CourseQuestionTreeWithLessons = {
   course: {
-    id: string;
-    name: string;
-  };
-  lessons: CourseLessonWithQuestions[];
-};
+    id: string
+    name: string
+  }
+  lessons: CourseLessonWithQuestions[]
+}
 
 export type CourseItem = {
-  id: string;
-  name: string;
-};
+  id: string
+  name: string
+}
 
 export async function getAllCourses(): Promise<
-  { success: true; courses: CourseItem[] } | { success: false, error: string }
+  { success: true; courses: CourseItem[] } | { success: false; error: string }
 > {
-  const session = await getSession();
+  const session = await getSession()
   if (!session.success) {
-    return { success: false, error: "No autorizado" };
+    return { success: false, error: "No autorizado" }
   }
 
   const courses = await prisma.course.findMany({
@@ -59,26 +66,29 @@ export async function getAllCourses(): Promise<
       name: true,
     },
     orderBy: { name: "asc" },
-  });
+  })
 
   return {
     success: true,
     courses,
-  };
+  }
 }
 
 export async function getCourseQuestionTree(
   courseId: string
-): Promise<{ success: true; data: CourseQuestionTree } | { success: false, error: string }> {
-  const session = await getSession();
+): Promise<
+  | { success: true; data: CourseQuestionTree }
+  | { success: false; error: string }
+> {
+  const session = await getSession()
   if (!session.success) {
-    return { success: false, error: "No autorizado" };
+    return { success: false, error: "No autorizado" }
   }
 
-  const parsed = courseIdOnlySchema.safeParse({ id: courseId });
+  const parsed = courseIdOnlySchema.safeParse({ id: courseId })
 
   if (!parsed.success) {
-    return { success: false, error: "Curso inválido" };
+    return { success: false, error: "Curso inválido" }
   }
 
   // Obtener curso con sus preguntas directamente (no a través de lecciones)
@@ -96,6 +106,7 @@ export async function getCourseQuestionTree(
           from: true,
           difficulty: true,
           type: true,
+          metadata: true,
           answers: {
             orderBy: [{ isCorrect: "desc" }, { id: "asc" }],
             select: {
@@ -107,10 +118,10 @@ export async function getCourseQuestionTree(
         },
       },
     },
-  });
+  })
 
   if (!course) {
-    return { success: false, error: "No se encontró el curso" };
+    return { success: false, error: "No se encontró el curso" }
   }
 
   return {
@@ -134,21 +145,24 @@ export async function getCourseQuestionTree(
         })),
       })),
     },
-  };
+  }
 }
 
 export async function getCourseQuestionsWithLessons(
   courseId: string
-): Promise<{ success: true; data: CourseQuestionTreeWithLessons } | { success: false, error: string }> {
-  const session = await getSession();
+): Promise<
+  | { success: true; data: CourseQuestionTreeWithLessons }
+  | { success: false; error: string }
+> {
+  const session = await getSession()
   if (!session.success) {
-    return { success: false, error: "No autorizado" };
+    return { success: false, error: "No autorizado" }
   }
 
-  const parsed = courseIdOnlySchema.safeParse({ id: courseId });
+  const parsed = courseIdOnlySchema.safeParse({ id: courseId })
 
   if (!parsed.success) {
-    return { success: false, error: "Curso inválido" };
+    return { success: false, error: "Curso inválido" }
   }
 
   // Get course with lessons and their questions
@@ -158,15 +172,16 @@ export async function getCourseQuestionsWithLessons(
       id: true,
       name: true,
     },
-  });
+  })
 
   if (!course) {
-    return { success: false, error: "No se encontró el curso" };
+    return { success: false, error: "No se encontró el curso" }
   }
 
   // Get all lessons that have questions from this course
   const lessons = await prisma.lesson.findMany({
-    where: { // <-- NUEVO: Filtro a nivel de Lesson
+    where: {
+      // <-- NUEVO: Filtro a nivel de Lesson
       questions: {
         some: {
           question: {
@@ -193,11 +208,13 @@ export async function getCourseQuestionsWithLessons(
               from: true,
               difficulty: true,
               type: true,
+              metadata: true,
               answers: {
                 orderBy: [{ isCorrect: "desc" }, { id: "asc" }],
                 select: {
                   id: true,
                   answerText: true,
+                  metadata: true,
                   isCorrect: true,
                 },
               },
@@ -207,7 +224,7 @@ export async function getCourseQuestionsWithLessons(
         orderBy: { orderIndex: "asc" },
       },
     },
-  });
+  })
 
   // Also get questions that aren't in any lesson
   const allCourseQuestions = await prisma.question.findMany({
@@ -219,38 +236,42 @@ export async function getCourseQuestionsWithLessons(
       from: true,
       difficulty: true,
       type: true,
+      metadata: true,
       answers: {
         orderBy: [{ isCorrect: "desc" }, { id: "asc" }],
         select: {
           id: true,
           answerText: true,
           isCorrect: true,
+          metadata: true,
         },
       },
     },
-  });
+  })
 
-  const questionsInLessons = new Set<string>();
+  const questionsInLessons = new Set<string>()
   const lessonsMapped = lessons.map((lesson) => {
     const mappedQuestions = lesson.questions.map((lq) => {
-      questionsInLessons.add(lq.question.id);
-      return lq.question as CourseQuestionItem;
-    });
+      questionsInLessons.add(lq.question.id)
+      return lq.question as CourseQuestionItem
+    })
     return {
       id: lesson.id,
       title: lesson.title,
       questions: mappedQuestions,
-    };
-  });
+    }
+  })
 
   // Add unassigned questions as a special "Unassigned" lesson if they exist
-  const unassignedQuestions = allCourseQuestions.filter((q) => !questionsInLessons.has(q.id));
+  const unassignedQuestions = allCourseQuestions.filter(
+    (q) => !questionsInLessons.has(q.id)
+  )
   if (unassignedQuestions.length > 0) {
     lessonsMapped.push({
       id: "unassigned",
       title: "Sin asignar a lección",
       questions: unassignedQuestions as CourseQuestionItem[],
-    });
+    })
   }
 
   return {
@@ -262,5 +283,5 @@ export async function getCourseQuestionsWithLessons(
       },
       lessons: lessonsMapped,
     },
-  };
+  }
 }

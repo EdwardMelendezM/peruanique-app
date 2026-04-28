@@ -17,18 +17,33 @@ import {
 
 /**
  * Zod schema for POST /v1/lessons/:lessonId/answer
- * Validates questionId, selectedOptionId, and timeSpentSeconds
+ * Supports different question types with flexible answer data
  */
 const answerLessonSchema = z.object({
   questionId: z.string().uuid("Invalid question ID"),
-  selectedOptionId: z.string().uuid("Invalid option ID"),
+  // Para compatibilidad con tipos existentes
+  selectedOptionId: z.string().uuid("Invalid option ID").optional(),
+  // Nuevos campos para tipos avanzados
+  answerText: z.string().optional(), // LONG_TEXT
+  mathExpression: z.string().optional(), // MATH_EXPRESSION
+  imageCoordinates: z.object({ x: z.number(), y: z.number() }).optional(), // IMAGE_BASED
   timeSpentSeconds: z
     .number()
     .int()
     .min(0, "Time cannot be negative")
     .max(3600, "Time cannot exceed 1 hour"),
+}).refine((data) => {
+  // Validación: Al menos uno de los campos de respuesta debe estar presente
+  const hasSelectedOption = !!data.selectedOptionId;
+  const hasAnswerText = !!data.answerText;
+  const hasMathExpression = !!data.mathExpression;
+  const hasImageCoordinates = !!data.imageCoordinates;
+  
+  return hasSelectedOption || hasAnswerText || hasMathExpression || hasImageCoordinates;
+}, {
+  message: "At least one answer field must be provided",
+  path: ["answerData"],
 });
-
 
 /**
  * POST /v1/lessons/:lessonId/answer
@@ -90,6 +105,8 @@ export async function POST(
         id: true,
         difficulty: true,
         explanationText: true,
+        type: true, // ✅ Obtener tipo de pregunta
+        answers: true, // ✅ Obtener todas las respuestas para validación
       },
     });
 
@@ -97,39 +114,71 @@ export async function POST(
       return jsonError("NOT_FOUND", "Question not found", 404);
     }
 
-    // Verify the question belongs to this lesson through LessonQuestion
-    const lessonQuestion = await prisma.lessonQuestion.findUnique({
-      where: {
-        lessonId_questionId: {
-          lessonId,
-          questionId,
-        },
-      },
-    });
+    // ✅ Validar respuesta basada en el tipo de pregunta
+    let isCorrect = false;
+    let selectedAnswerId: string | null = null;
 
-    if (!lessonQuestion) {
-      return jsonError("NOT_FOUND", "Question not found in this lesson", 404);
-    }
+    switch (question.type) {
+      case "MULTIPLE_CHOICE":
+      case "DRAG_AND_DROP":
+        // Lógica existente
+        if (!selectedOptionId) {
+          return jsonError("VALIDATION_ERROR", "selectedOptionId is required for this question type", 422);
+        }
+        const selectedAnswer = await prisma.answer.findUnique({
+          where: { id: selectedOptionId },
+          select: {
+            id: true,
+            questionId: true,
+            isCorrect: true,
+          },
+        });
+        if (!selectedAnswer || selectedAnswer.questionId !== questionId) {
+          return jsonError("NOT_FOUND", "Answer option not found", 404);
+        }
+        isCorrect = selectedAnswer.isCorrect;
+        selectedAnswerId = selectedAnswer.id;
+        break;
 
-    // Verify selected option exists and belongs to this question
-    const selectedAnswer = await prisma.answer.findUnique({
-      where: { id: selectedOptionId },
-      select: {
-        id: true,
-        questionId: true,
-        isCorrect: true,
-      },
-    });
+      case "LONG_TEXT":
+        // Comparar texto
+        if (!parsed.data.answerText) {
+          return jsonError("VALIDATION_ERROR", "answerText is required for LONG_TEXT questions", 422);
+        }
+        const correctLongText = question.answers.find(a => a.isCorrect)?.answerText;
+        isCorrect = correctLongText ? parsed.data.answerText.trim().toLowerCase() === correctLongText.trim().toLowerCase() : false;
+        // Para LONG_TEXT, no hay selectedAnswerId
+        break;
 
-    if (!selectedAnswer || selectedAnswer.questionId !== questionId) {
-      return jsonError("NOT_FOUND", "Answer option not found", 404);
+      case "MATH_EXPRESSION":
+        // Comparar expresión matemática (simplificada)
+        if (!parsed.data.mathExpression) {
+          return jsonError("VALIDATION_ERROR", "mathExpression is required for MATH_EXPRESSION questions", 422);
+        }
+        const correctMath = question.answers.find(a => a.isCorrect)?.answerText; // Asumir que está en answerText
+        isCorrect = correctMath ? parsed.data.mathExpression.trim() === correctMath.trim() : false;
+        break;
+
+      case "IMAGE_BASED":
+        // Comparar coordenadas (simplificada)
+        if (!parsed.data.imageCoordinates) {
+          return jsonError("VALIDATION_ERROR", "imageCoordinates is required for IMAGE_BASED questions", 422);
+        }
+        const correctCoords = question.answers.find(a => a.isCorrect)?.metadata as { x: number; y: number } | null;
+        isCorrect = correctCoords ? 
+          Math.abs(parsed.data.imageCoordinates.x - correctCoords.x) < 10 && 
+          Math.abs(parsed.data.imageCoordinates.y - correctCoords.y) < 10 : false;
+        break;
+
+      default:
+        return jsonError("VALIDATION_ERROR", "Unsupported question type", 422);
     }
 
     // Find RoadmapNode for this lesson (needed to track progress)
     const roadmapNode = await findRoadmapNode(lessonId, user.id);
 
     // Calculate XP delta
-    const xpDelta = calculateXpDelta(question.difficulty, selectedAnswer.isCorrect);
+    const xpDelta = calculateXpDelta(question.difficulty, isCorrect);
 
     // Create LessonAttempt
     const attempt = await prisma.lessonAttempt.create({
@@ -137,8 +186,8 @@ export async function POST(
         userId: user.id,
         nodeId: roadmapNode?.id,
         questionId,
-        selectedAnswerId: selectedOptionId,
-        isCorrect: selectedAnswer.isCorrect,
+        selectedAnswerId,
+        isCorrect,
         timeSeconds: timeSpentSeconds,
       },
       select: {
@@ -166,7 +215,7 @@ export async function POST(
       const isLessonCompleted = distinctQuestionsCorrect.length === totalQuestions;
 
       // Actualizar currentEnergy si falla
-      if (!selectedAnswer.isCorrect) {
+      if (!isCorrect) {
         await prisma.user.update({
           where: { id: user.id},
           data: { currentEnergy: { decrement: 1 } },
@@ -181,14 +230,14 @@ export async function POST(
         update: {
           scoreObtained: { increment: xpDelta },
           // Solo incrementamos estrellas o lógica de gamificación si fue correcta
-          starsEarned: selectedAnswer.isCorrect ? { increment: 1 } : undefined,
+          starsEarned: isCorrect ? { increment: 1 } : undefined,
           status: isLessonCompleted ? "COMPLETED" : "IN_PROGRESS",
         },
         create: {
           userId: user.id,
           nodeId: roadmapNode.id,
           scoreObtained: xpDelta,
-          starsEarned: selectedAnswer.isCorrect ? 1 : 0,
+          starsEarned: isCorrect ? 1 : 0,
           status: isLessonCompleted ? "COMPLETED" : "IN_PROGRESS",
         },
       });
@@ -219,17 +268,26 @@ export async function POST(
         questionId,
         isCorrect: true,
       },
-      select: { id: true },
+      select: { id: true, answerText: true, metadata: true },
     });
+
+    // Preparar respuesta correcta basada en tipo
+    let correctAnswerData: any = { id: correctAnswer?.id };
+    
+    if (question.type === "LONG_TEXT" || question.type === "MATH_EXPRESSION") {
+      correctAnswerData.text = correctAnswer?.answerText;
+    } else if (question.type === "IMAGE_BASED") {
+      correctAnswerData.coordinates = correctAnswer?.metadata;
+    }
 
     return jsonSuccess(
       {
         attemptId: attempt.id,
-        isCorrect: selectedAnswer.isCorrect,
-        correctOptionId: correctAnswer?.id,
+        isCorrect,
+        correctAnswer: correctAnswerData,
         xpDelta,
-        showInsight: !selectedAnswer.isCorrect,
-        explanation: !selectedAnswer.isCorrect ? question.explanationText : undefined,
+        showInsight: !isCorrect,
+        explanation: !isCorrect ? question.explanationText : undefined,
       },
       200
     );
@@ -238,4 +296,3 @@ export async function POST(
     return jsonError("SERVER_ERROR", "Failed to submit answer", 500);
   }
 }
-

@@ -25,6 +25,9 @@ enum Difficulty {
 enum QuestionType {
   MULTIPLE_CHOICE
   DRAG_AND_DROP
+  LONG_TEXT
+  MATH_EXPRESSION
+  IMAGE_BASED
 }
 
 enum ProgressStatus {
@@ -187,6 +190,7 @@ model Question {
   difficulty      Difficulty   @default(BEGINNER)
   type            QuestionType @default(MULTIPLE_CHOICE)
   from            String? // Ej: "UNSAAC ORD 2023-I"
+  metadata        Json? // Metadata adicional para tipos especiales (LONG_TEXT, MATH_EXPRESSION, IMAGE_BASED)
 
   // ✅ NUEVO: Relación many-to-many con lecciones
   lessons  LessonQuestion[]
@@ -208,6 +212,7 @@ model Answer {
 
   answerText String  @db.Text
   isCorrect  Boolean @default(false)
+  metadata   Json? // Metadata adicional para tipos especiales
 
   selectedIn LessonAttempt[] @relation("SelectedAnswer")
 

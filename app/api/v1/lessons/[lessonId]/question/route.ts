@@ -131,9 +131,12 @@ export async function GET(
         questionId: nextQuestion.id,
         prompt: nextQuestion.questionText,
         difficulty: nextQuestion.difficulty,
+        type: nextQuestion.type, // ✅ Incluir tipo de pregunta
+        metadata: nextQuestion.metadata, // ✅ Incluir metadata
         options: nextQuestion.answers.map((answer) => ({
           optionId: answer.id,
           text: answer.answerText,
+          metadata: answer.metadata, // ✅ Incluir metadata de respuesta
         })),
         from: nextQuestion.from,
         totalQuestions,

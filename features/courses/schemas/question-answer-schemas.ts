@@ -11,7 +11,13 @@ const optionalSourceSchema = z
   .transform((value) => (value === "" ? null : value));
 
 export const difficultyValues = ["BEGINNER", "INTERMEDIATE", "ADVANCED", "PROFESSIONAL"] as const;
-export const questionTypeValues = ["MULTIPLE_CHOICE", "DRAG_AND_DROP"] as const;
+export const questionTypeValues = [
+  "MULTIPLE_CHOICE",
+  "DRAG_AND_DROP",
+  "LONG_TEXT",
+  "MATH_EXPRESSION",
+  "IMAGE_BASED",
+] as const;
 
 export const createQuestionSchema = z.object({
   courseId: uuidSchema,
@@ -25,6 +31,14 @@ export const createQuestionSchema = z.object({
   from: optionalSourceSchema,
   difficulty: z.enum(difficultyValues),
   type: z.enum(questionTypeValues),
+  metadata: z
+    .union([z.string().max(4000, "Metadata demasiado largo"), z.literal("")])
+    .optional()
+    .transform((value) => {
+      if (value === undefined) return undefined;
+      if (value === "") return null;
+      return value;
+    }),
 });
 
 export const updateQuestionSchema = createQuestionSchema.extend({
@@ -47,7 +61,19 @@ export const createAnswerSchema = z.object({
   isCorrect: z.boolean(),
 });
 
-export const updateAnswerSchema = createAnswerSchema.extend({
+// Allow optional metadata for answers (e.g., coordinates for IMAGE_BASED)
+export const createAnswerSchemaWithMetadata = createAnswerSchema.extend({
+  metadata: z
+    .union([z.string().max(4000, "Metadata demasiado largo"), z.literal("")])
+    .optional()
+    .transform((value) => {
+      if (value === undefined) return undefined;
+      if (value === "") return null;
+      return value;
+    }),
+});
+
+export const updateAnswerSchema = createAnswerSchemaWithMetadata.extend({
   answerId: uuidSchema,
 });
 

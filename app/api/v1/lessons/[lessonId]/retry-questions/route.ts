@@ -80,9 +80,12 @@ export async function GET(
       questionId: question.id,
       prompt: question.questionText,
       difficulty: question.difficulty,
+      type: question.type, // ✅ Incluir tipo de pregunta
+      metadata: question.metadata, // ✅ Incluir metadata
       options: question.answers.map((answer) => ({
         optionId: answer.id,
         text: answer.answerText,
+        metadata: answer.metadata, // ✅ Incluir metadata de respuesta
       })),
       from: question.from,
     }));
@@ -101,4 +104,3 @@ export async function GET(
     return jsonError("SERVER_ERROR", "Failed to fetch retry questions", 500);
   }
 }
-

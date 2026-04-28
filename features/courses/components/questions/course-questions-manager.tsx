@@ -1,32 +1,40 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { useMemo, useState } from "react";
-import { BookOpenCheck, CircleCheck, CircleX, MessageSquare, Plus, SquarePen } from "lucide-react";
-import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AnswerDeleteButton } from "./answer-delete-button";
-import { AnswerModal } from "./answer-modal";
-import { QuestionDeleteButton } from "./question-delete-button";
-import { QuestionModal } from "./question-modal";
+import Link from "next/link"
+import { useMemo, useState } from "react"
+import LatexRenderer from "@/components/ui/latex-renderer"
+import {
+  BookOpenCheck,
+  CircleCheck,
+  CircleX,
+  MessageSquare,
+  Plus,
+  SquarePen,
+} from "lucide-react"
+import { EmptyPlaceholder } from "@/components/shared/empty-placeholder"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AnswerDeleteButton } from "./answer-delete-button"
+import { AnswerModal } from "./answer-modal"
+import { QuestionDeleteButton } from "./question-delete-button"
+import { QuestionModal } from "./question-modal"
 import type {
   CourseLessonWithQuestions,
   CourseQuestionItem,
   CourseAnswerItem,
-} from "../../actions/course-content-queries";
+} from "../../actions/course-content-queries"
 
 interface CourseQuestionsManagerProps {
-  courseId: string;
-  courseName: string;
-  lessons: CourseLessonWithQuestions[];
+  courseId: string
+  courseName: string
+  lessons: CourseLessonWithQuestions[]
 }
 
 interface AnswerModalState {
-  open: boolean;
-  question: CourseQuestionItem | null;
-  answer?: CourseAnswerItem;
+  open: boolean
+  question: CourseQuestionItem | null
+  answer?: CourseAnswerItem
 }
 
 const difficultyLabel: Record<CourseQuestionItem["difficulty"], string> = {
@@ -34,38 +42,52 @@ const difficultyLabel: Record<CourseQuestionItem["difficulty"], string> = {
   INTERMEDIATE: "Intermedio",
   ADVANCED: "Avanzado",
   PROFESSIONAL: "Profesional",
-};
+}
 
 const typeLabel: Record<CourseQuestionItem["type"], string> = {
   MULTIPLE_CHOICE: "Opción múltiple",
   DRAG_AND_DROP: "Arrastrar y soltar",
-};
+  LONG_TEXT: "Texto largo",
+  MATH_EXPRESSION: "Expresión matemática",
+  IMAGE_BASED: "Basada en imagen",
+}
 
-export function CourseQuestionsManager({ courseId, courseName, lessons }: CourseQuestionsManagerProps) {
-  const [createQuestionOpen, setCreateQuestionOpen] = useState(false);
-  const [editingQuestion, setEditingQuestion] = useState<CourseQuestionItem | null>(null);
+export function CourseQuestionsManager({
+  courseId,
+  courseName,
+  lessons,
+}: CourseQuestionsManagerProps) {
+  const [createQuestionOpen, setCreateQuestionOpen] = useState(false)
+  const [editingQuestion, setEditingQuestion] =
+    useState<CourseQuestionItem | null>(null)
   const [answerModal, setAnswerModal] = useState<AnswerModalState>({
     open: false,
     question: null,
-  });
+  })
 
   const questionCount = useMemo(() => {
-    return lessons.reduce((count, lesson) => count + lesson.questions.length, 0);
-  }, [lessons]);
+    return lessons.reduce((count, lesson) => count + lesson.questions.length, 0)
+  }, [lessons])
 
-  const hasLessons = lessons.length > 0;
-  const hasQuestions = questionCount > 0;
+  const hasLessons = true
+  const hasQuestions = questionCount > 0
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/50 bg-card px-4 py-3">
         <div className="space-y-1">
-          <p className="text-sm font-semibold text-foreground">Curso: {courseName}</p>
+          <p className="text-sm font-semibold text-foreground">
+            Curso: {courseName}
+          </p>
           <p className="text-xs text-muted-foreground">
-            {questionCount} pregunta(s) distribuidas en {lessons.length} lección(es)
+            {questionCount} pregunta(s) distribuidas en {lessons.length}{" "}
+            lección(es)
           </p>
         </div>
-        <Button onClick={() => setCreateQuestionOpen(true)} disabled={!hasLessons}>
+        <Button
+          onClick={() => setCreateQuestionOpen(true)}
+          disabled={!hasLessons}
+        >
           <Plus className="mr-2 h-4 w-4" />
           Nueva pregunta
         </Button>
@@ -78,7 +100,9 @@ export function CourseQuestionsManager({ courseId, courseName, lessons }: Course
           description="Primero crea lecciones para poder registrar preguntas y respuestas."
           action={
             <Button asChild>
-              <Link href={`/admin/courses/${courseId}/lessons`}>Gestionar lecciones</Link>
+              <Link href={`/admin/courses/${courseId}/lessons`}>
+                Gestionar lecciones
+              </Link>
             </Button>
           }
         />
@@ -103,22 +127,44 @@ export function CourseQuestionsManager({ courseId, courseName, lessons }: Course
               </CardHeader>
               <CardContent className="space-y-4 pt-5">
                 {lesson.questions.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Esta lección no tiene preguntas todavía.</p>
+                  <p className="text-sm text-muted-foreground">
+                    Esta lección no tiene preguntas todavía.
+                  </p>
                 ) : (
                   lesson.questions.map((question) => (
-                    <div key={question.id} className="space-y-3 rounded-2xl border border-border/50 p-4">
+                    <div
+                      key={question.id}
+                      className="space-y-3 rounded-2xl border border-border/50 p-4"
+                    >
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="space-y-2">
                           <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="outline">{difficultyLabel[question.difficulty]}</Badge>
-                            <Badge variant="outline">{typeLabel[question.type]}</Badge>
+                            <Badge variant="outline">
+                              {difficultyLabel[question.difficulty]}
+                            </Badge>
+                            <Badge variant="outline">
+                              {typeLabel[question.type]}
+                            </Badge>
                           </div>
-                          <p className="text-sm font-semibold text-foreground">{question.questionText}</p>
+                          <p className="text-sm font-semibold text-foreground">
+                            {question.questionText}
+                          </p>
+                          {/* Render LaTeX from metadata if present */}
+                          {question.metadata?.latex ? (
+                            <LatexRenderer
+                              latex={question.metadata.latex}
+                              className="mt-2 text-sm text-muted-foreground"
+                            />
+                          ) : null}
                           {question.from ? (
-                            <p className="text-xs text-muted-foreground">Fuente: {question.from}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Fuente: {question.from}
+                            </p>
                           ) : null}
                           {question.explanationText ? (
-                            <p className="text-xs text-muted-foreground">{question.explanationText}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {question.explanationText}
+                            </p>
                           ) : null}
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -126,7 +172,9 @@ export function CourseQuestionsManager({ courseId, courseName, lessons }: Course
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => setAnswerModal({ open: true, question })}
+                            onClick={() =>
+                              setAnswerModal({ open: true, question })
+                            }
                           >
                             <Plus className="mr-2 h-4 w-4" />
                             Respuesta
@@ -150,7 +198,9 @@ export function CourseQuestionsManager({ courseId, courseName, lessons }: Course
 
                       <div className="space-y-2">
                         {question.answers.length === 0 ? (
-                          <p className="text-xs text-muted-foreground">Aún no hay respuestas para esta pregunta.</p>
+                          <p className="text-xs text-muted-foreground">
+                            Aún no hay respuestas para esta pregunta.
+                          </p>
                         ) : (
                           question.answers.map((answer) => (
                             <div
@@ -164,13 +214,25 @@ export function CourseQuestionsManager({ courseId, courseName, lessons }: Course
                                   <CircleX className="h-4 w-4 text-muted-foreground" />
                                 )}
                                 <span>{answer.answerText}</span>
+                                {answer.metadata && (
+                                  <LatexRenderer
+                                    latex={answer.metadata.latex}
+                                    className="mt-2 text-sm text-muted-foreground"
+                                  />
+                                )}
                               </div>
                               <div className="flex items-center gap-1">
                                 <Button
                                   type="button"
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => setAnswerModal({ open: true, question, answer })}
+                                  onClick={() =>
+                                    setAnswerModal({
+                                      open: true,
+                                      question,
+                                      answer,
+                                    })
+                                  }
                                 >
                                   <SquarePen className="mr-2 h-4 w-4" />
                                   Editar
@@ -202,11 +264,15 @@ export function CourseQuestionsManager({ courseId, courseName, lessons }: Course
       />
 
       <QuestionModal
-        key={editingQuestion ? `edit-question-${editingQuestion.id}` : "edit-question-empty"}
+        key={
+          editingQuestion
+            ? `edit-question-${editingQuestion.id}`
+            : "edit-question-empty"
+        }
         open={Boolean(editingQuestion)}
         onOpenChange={(open) => {
           if (!open) {
-            setEditingQuestion(null);
+            setEditingQuestion(null)
           }
         }}
         courseId={courseId}
@@ -222,7 +288,7 @@ export function CourseQuestionsManager({ courseId, courseName, lessons }: Course
         open={answerModal.open}
         onOpenChange={(open) => {
           if (!open) {
-            setAnswerModal({ open: false, question: null });
+            setAnswerModal({ open: false, question: null })
           }
         }}
         courseId={courseId}
@@ -230,6 +296,5 @@ export function CourseQuestionsManager({ courseId, courseName, lessons }: Course
         answer={answerModal.answer}
       />
     </div>
-  );
+  )
 }
-

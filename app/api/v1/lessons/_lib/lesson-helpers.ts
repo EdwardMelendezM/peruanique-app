@@ -223,10 +223,12 @@ const getAllLessonQuestions = async (lessonId: string) => {
       difficulty: true,
       type: true,
       from: true,
+      metadata: true, // ✅ Incluir metadata para nuevos tipos
       answers: {
         select: {
           id: true,
           answerText: true,
+          metadata: true, // ✅ Incluir metadata para respuestas
         },
       },
     },
