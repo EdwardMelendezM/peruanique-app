@@ -20,10 +20,12 @@ export async function getContentByCourses(courseIds: string[]) {
       type: q.type,
       from_source: q.from,
       isDisabled: q.isDisabled,
+      metadata: q.metadata,
       updatedAt: q.updatedAt.getTime(),
     })),
     answers: questions.flatMap(q => q.answers.map(a => ({
       ...a,
+      metadata: a.metadata,
       updatedAt: a.updatedAt.getTime(),
     }))),
     lessonQuestions: lessonQuestions.map(lq => ({

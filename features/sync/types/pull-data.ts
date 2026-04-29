@@ -58,6 +58,7 @@ export interface SyncQuestion extends BaseEntity {
   type: QuestionType;
   from: string | null;
   isDisabled: boolean;
+  metadata: any;
 }
 
 export interface SyncAnswer {
@@ -66,6 +67,7 @@ export interface SyncAnswer {
   answerText: string;
   isCorrect: boolean;
   isDisabled: boolean;
+  metadata: any;
 }
 
 export interface SyncRoadmapNode extends BaseEntity {

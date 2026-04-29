@@ -92,7 +92,8 @@ export async function getOfflineContent({
       questionId: a.questionId,
       answerText: a.answerText,
       isCorrect: a.isCorrect,
-      isDisabled: a.isDisabled
+      isDisabled: a.isDisabled,
+      metadata: a.metadata
     }));
 
     results.lessonQuestions = content.lessonQuestions.map((lq): SyncLessonQuestion => ({
