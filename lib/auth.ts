@@ -1,6 +1,8 @@
 import {betterAuth} from "better-auth";
 import {prismaAdapter} from "better-auth/adapters/prisma";
 import {nextCookies} from "better-auth/next-js";
+
+import {variables} from "@/config/var";
 import {prisma} from "@/lib/prisma";
 
 export const auth = betterAuth({
@@ -62,13 +64,25 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET!,
 
   // Configuración de proveedores sociales (OAuth)
-  // socialProviders: {
-  //   google: {
-  //     clientId: process.env.GOOGLE_CLIENT_ID!,
-  //     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-  //     disableImplicitSignUp: true,
-  //   },
-  // },
+  socialProviders: {
+    google:
+      variables.GOOGLE_CLIENT_ID && variables.GOOGLE_CLIENT_SECRET
+        ? () => ({
+            clientId: variables.GOOGLE_CLIENT_ID,
+            clientSecret: variables.GOOGLE_CLIENT_SECRET,
+            disableImplicitSignUp: false,
+          })
+        : undefined,
+    apple:
+      variables.APPLE_CLIENT_ID && variables.APPLE_CLIENT_SECRET
+        ? () => ({
+            clientId: variables.APPLE_CLIENT_ID,
+            clientSecret: variables.APPLE_CLIENT_SECRET,
+            appBundleIdentifier: variables.APPLE_APP_BUNDLE_IDENTIFIER || undefined,
+            disableImplicitSignUp: false,
+          })
+        : undefined,
+  },
 
   plugins: [
     nextCookies(),

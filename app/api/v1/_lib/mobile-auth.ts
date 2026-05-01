@@ -16,6 +16,34 @@ export const loginBodySchema = z.object({
   password: z.string().min(1),
 });
 
+export const mobileSocialProviderSchema = z.enum(["google", "apple"]);
+
+export const mobileSocialAuthBodySchema = z.object({
+  provider: mobileSocialProviderSchema,
+  callbackURL: z.string().optional(),
+  newUserCallbackURL: z.string().optional(),
+  errorCallbackURL: z.string().optional(),
+  disableRedirect: z.boolean().optional(),
+  requestSignUp: z.boolean().optional(),
+  scopes: z.array(z.string()).optional(),
+  loginHint: z.string().optional(),
+  additionalData: z.record(z.string(), z.any()).optional(),
+  idToken: z.object({
+    token: z.string(),
+    nonce: z.string().optional(),
+    accessToken: z.string().optional(),
+    refreshToken: z.string().optional(),
+    expiresAt: z.number().optional(),
+    user: z.object({
+      name: z.object({
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+      }).optional(),
+      email: z.string().optional(),
+    }).optional(),
+  }),
+});
+
 export const updateMeBodySchema = z
   .object({
     username: z.string().trim().min(2).optional(),
