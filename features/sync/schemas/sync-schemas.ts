@@ -5,10 +5,10 @@ export const LessonAttemptSchema = z.object({
   userId: z.string(),
   nodeId: z.string(),
   questionId: z.string(),
-  selectedAnswerId: z.string(),
+  selectedAnswerId: z.string().nullable(),
   isCorrect: z.boolean(),
   timeSeconds: z.number(),
-  answeredAt: z.number(), // Viene como timestamp (ms) de SQLite
+  answeredAt: z.string(), // Viene como timestamp (ms) de SQLite
 });
 
 export const UserProgressSchema = z.object({

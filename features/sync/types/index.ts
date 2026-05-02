@@ -3,7 +3,7 @@ export interface LessonAttemptInput {
   userId: string;
   nodeId: string;
   questionId: string;
-  selectedAnswerId: string;
+  selectedAnswerId: string | null;
   isCorrect: boolean;
   timeSeconds: number;
   answeredAt: Date; // ISO Date
